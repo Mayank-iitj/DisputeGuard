@@ -1,8 +1,10 @@
 import { ChatMessage, ChatPort } from './port';
 import { parseDgEnvelope } from '@dg/shared';
+import { api } from '../api/client';
 
 export class FallbackChatImpl implements ChatPort {
   private ws: WebSocket | null = null;
+  private bc: BroadcastChannel | null = null;
   private appKey: string = '';
   private token: string = '';
   private userId: string = '';
@@ -12,6 +14,22 @@ export class FallbackChatImpl implements ChatPort {
   private connListeners = new Set<(s: 'connected' | 'connecting' | 'disconnected') => void>();
   private msgListeners = new Set<(m: ChatMessage) => void>();
   private messageBuffer: ChatMessage[] = [];
+  private seenUids = new Set<string>();
+
+  constructor() {
+    if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
+      try {
+        this.bc = new BroadcastChannel('disputeguard_realtime_bus');
+        this.bc.onmessage = (event) => {
+          if (event.data && event.data.type === 'message') {
+            this.handleRawMessage(event.data.message);
+          }
+        };
+      } catch (e) {
+        console.warn('BroadcastChannel not available:', e);
+      }
+    }
+  }
 
   init(appKey: string): void {
     this.appKey = appKey;
@@ -33,6 +51,9 @@ export class FallbackChatImpl implements ChatPort {
 
       this.ws.onopen = () => {
         this.setConnectionStatus('connected');
+        if (this.currentChannelId) {
+          this.ws?.send(JSON.stringify({ type: 'join', channelId: this.currentChannelId }));
+        }
       };
 
       this.ws.onmessage = (event) => {
@@ -51,12 +72,17 @@ export class FallbackChatImpl implements ChatPort {
       };
 
       this.ws.onerror = () => {
-        // Fallback to simulated connected state in demo
         this.setConnectionStatus('connected');
       };
 
       this.ws.onclose = () => {
         this.setConnectionStatus('disconnected');
+        // Auto-reconnect after 3s
+        setTimeout(() => {
+          if (this.token && this.userId) {
+            this.connect(this.token, this.userId);
+          }
+        }, 3000);
       };
     } catch {
       this.setConnectionStatus('connected');
@@ -91,27 +117,46 @@ export class FallbackChatImpl implements ChatPort {
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
       this.ws.send(JSON.stringify({ type: 'join', channelId }));
     }
+
+    // Also fetch initial history from REST API for guaranteed delivery
+    try {
+      const res = await api.getMessages(channelId);
+      if (res && res.messages) {
+        for (const m of res.messages) {
+          this.handleRawMessage(m);
+        }
+      }
+    } catch {
+      // Ignore
+    }
   }
 
   async sendText(channelId: string, text: string): Promise<{ uid: string; ts: number }> {
     const uid = `msg_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
     const ts = Date.now();
 
+    const rawMsg = {
+      uid,
+      channelId,
+      senderId: this.userId,
+      text,
+      ts,
+    };
+
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
       this.ws.send(JSON.stringify({ type: 'send_text', channelId, text, uid }));
-    } else {
-      // Local broadcast
-      const chatMsg: ChatMessage = {
-        kind: 'text',
-        uid,
-        channelId,
-        senderId: this.userId,
-        ts,
-        text,
-      };
-      this.broadcastLocal(chatMsg);
     }
 
+    // Broadcast cross-iframe / cross-tab immediately
+    if (this.bc) {
+      try {
+        this.bc.postMessage({ type: 'message', message: rawMsg });
+      } catch (e) {
+        console.warn('BC send failed:', e);
+      }
+    }
+
+    this.handleRawMessage(rawMsg);
     return { uid, ts };
   }
 
@@ -125,13 +170,22 @@ export class FallbackChatImpl implements ChatPort {
   }
 
   private handleRawMessage(raw: any) {
+    if (!raw) return;
+    const uid = raw.uid || (raw.env && raw.env.id) || `temp_${Math.random()}`;
+
+    // Deduplicate
+    if (this.seenUids.has(uid)) {
+      return;
+    }
+    this.seenUids.add(uid);
+
     const env = parseDgEnvelope(raw.text);
     let chatMsg: ChatMessage;
 
     if (env) {
       chatMsg = {
         kind: 'envelope',
-        uid: raw.uid || env.id,
+        uid,
         channelId: raw.channelId || env.disputeId,
         senderId: raw.senderId || 'u_dg_arbitrator',
         ts: raw.ts || env.ts || Date.now(),
@@ -140,7 +194,7 @@ export class FallbackChatImpl implements ChatPort {
     } else {
       chatMsg = {
         kind: 'text',
-        uid: raw.uid,
+        uid,
         channelId: raw.channelId,
         senderId: raw.senderId,
         ts: raw.ts || Date.now(),
@@ -155,6 +209,8 @@ export class FallbackChatImpl implements ChatPort {
   }
 
   public broadcastLocal(m: ChatMessage) {
+    if (this.seenUids.has(m.uid)) return;
+    this.seenUids.add(m.uid);
     this.messageBuffer.push(m);
     for (const listener of this.msgListeners) {
       listener(m);

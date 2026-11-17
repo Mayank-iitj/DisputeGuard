@@ -15,12 +15,26 @@ import { calculateDisputeScore } from '../domain/risk';
 import { getLlmService } from '../ai/anthropic';
 import { buildOptions } from '../domain/policy';
 
+import { getFallbackServer } from '../nexconn/fallback';
+
 export const disputeRoutes: FastifyPluginAsync = async (fastify) => {
   const appDb = getDatabase();
   const outbox = new OutboxWorker(appDb);
   const escrowDomain = new EscrowDomain(appDb);
   const llm = getLlmService();
   const chatPort = getServerChatPort();
+  const fallback = getFallbackServer();
+
+  // GET /disputes/:id/messages
+  fastify.get('/disputes/:id/messages', { preHandler: [fastify.authenticate] }, async (req: any, reply) => {
+    const { id } = req.params;
+    const dispute = appDb.db.prepare('SELECT channel_id FROM disputes WHERE id = ?').get(id) as any;
+    if (!dispute) {
+      return reply.status(404).send({ error: { code: 'NOT_FOUND', message: 'Dispute not found' } });
+    }
+    const msgs = fallback.getChannelMessages(dispute.channel_id);
+    return { messages: msgs };
+  });
 
   // POST /disputes
   fastify.post('/disputes', { preHandler: [fastify.authenticate] }, async (req: any, reply) => {

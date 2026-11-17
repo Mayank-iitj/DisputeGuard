@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 450" width="600" height="450">
+  <rect width="600" height="450" fill="#e2e8f0"/>
+  <!-- Macro Rim Arc -->
+  <path d="M50,150 Q300,50 550,150 L550,450 L50,450 Z" fill="#ffffff" stroke="#94a3b8" stroke-width="4"/>
+  <!-- Detailed fracture -->
+  <path d="M280,95 L288,140 L275,190 L295,260 L285,320" fill="none" stroke="#dc2626" stroke-width="5" stroke-linecap="round"/>
+  <!-- Caliper measurement -->
+  <line x1="260" y1="95" x2="260" y2="320" stroke="#0284c7" stroke-width="2" stroke-dasharray="4,4"/>
+  <text x="235" y="210" font-family="sans-serif" font-size="14" font-weight="bold" fill="#0284c7" transform="rotate(-90 235 210)">2.2 cm Fracture</text>
+  <text x="300" y="420" font-family="sans-serif" font-size="16" font-weight="bold" fill="#0f172a" text-anchor="middle">Evidence Photo 2: Macro Close-Up of Rim Crack</text>
+</svg>

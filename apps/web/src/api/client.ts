@@ -76,6 +76,10 @@ class ApiClient {
     return this.request<any>(`/disputes/${id}`);
   }
 
+  async getMessages(id: string) {
+    return this.request<{ messages: any[] }>(`/disputes/${id}/messages`);
+  }
+
   async getTimeline(id: string) {
     return this.request<{ timeline: any[] }>(`/disputes/${id}/timeline`);
   }

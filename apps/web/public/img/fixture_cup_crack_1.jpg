@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 450" width="600" height="450">
+  <rect width="600" height="450" fill="#f1f5f9"/>
+  <!-- Wooden table texture -->
+  <rect y="300" width="600" height="150" fill="#cbd5e1"/>
+  <!-- Ceramic Cup -->
+  <ellipse cx="300" cy="180" rx="90" ry="25" fill="#f8fafc" stroke="#475569" stroke-width="4"/>
+  <path d="M210,180 C210,320 390,320 390,180" fill="#f8fafc" stroke="#475569" stroke-width="4"/>
+  <!-- Crack on rim -->
+  <path d="M250,165 L255,185 L252,205 L260,225" fill="none" stroke="#ef4444" stroke-width="3" stroke-linecap="round"/>
+  <!-- Red inspection circle -->
+  <circle cx="255" cy="195" r="45" fill="none" stroke="#ef4444" stroke-width="2" stroke-dasharray="6,4"/>
+  <text x="300" y="40" font-family="sans-serif" font-size="18" font-weight="bold" fill="#0f172a" text-anchor="middle">Evidence Photo 1: Whole Item with Rim Defect</text>
+  <rect x="20" y="20" width="120" height="28" rx="6" fill="#ef4444"/>
+  <text x="80" y="38" font-family="sans-serif" font-size="12" font-weight="bold" fill="#ffffff" text-anchor="middle">DAMAGE VISIBLE</text>
+</svg>

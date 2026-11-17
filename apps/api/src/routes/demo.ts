@@ -1,6 +1,7 @@
 import { FastifyPluginAsync } from 'fastify';
 import { getDatabase } from '../db/database';
 import { seedDatabase } from '../db/seed';
+import { getFallbackServer } from '../nexconn/fallback';
 
 export const demoRoutes: FastifyPluginAsync = async (fastify) => {
   const appDb = getDatabase();
@@ -9,6 +10,7 @@ export const demoRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.post('/demo/reset', async () => {
     appDb.clearAll();
     seedDatabase(appDb);
+    getFallbackServer().clearAll();
     return { ok: true, message: 'DisputeGuard reset to initial clean seed state.' };
   });
 

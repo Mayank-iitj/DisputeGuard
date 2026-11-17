@@ -40,7 +40,11 @@ export class FallbackServerImpl implements ServerChatPort {
       ws.on('message', (data: string) => {
         try {
           const payload = JSON.parse(data.toString());
-          if (payload.type === 'send_text') {
+          if (payload.type === 'join') {
+            const chanId = payload.channelId;
+            const history = this.messages.get(chanId) || [];
+            ws.send(JSON.stringify({ type: 'history', channelId: chanId, messages: history }));
+          } else if (payload.type === 'send_text') {
             this.broadcastText(payload.channelId, userId, payload.text);
           }
         } catch (e) {
@@ -133,6 +137,11 @@ export class FallbackServerImpl implements ServerChatPort {
 
   public getChannelMessages(channelId: string): StoredMessage[] {
     return this.messages.get(channelId) || [];
+  }
+
+  public clearAll() {
+    this.messages.clear();
+    this.channels.clear();
   }
 
   private broadcastToChannel(channelId: string, payload: any) {

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 450" width="600" height="450">
+  <rect width="600" height="450" fill="#f8fafc"/>
+  <!-- Cardboard Box -->
+  <polygon points="150,140 450,140 500,280 200,280" fill="#d97706" stroke="#92400e" stroke-width="4"/>
+  <polygon points="100,220 200,280 200,380 100,320" fill="#b45309" stroke="#92400e" stroke-width="4"/>
+  <polygon points="200,280 500,280 500,380 200,380" fill="#ca8a04" stroke="#92400e" stroke-width="4"/>
+  <!-- Crushed corner -->
+  <polygon points="145,135 170,160 140,180 120,150" fill="#78350f"/>
+  <text x="300" y="420" font-family="sans-serif" font-size="16" font-weight="bold" fill="#0f172a" text-anchor="middle">Evidence Photo 3: Crushed Transit Box Corner</text>
+</svg>
