@@ -3,10 +3,8 @@ import { api } from '../api/client';
 import { stageDriver } from '../services/stageDriver';
 import { soundFx } from '../services/soundFx';
 import {
-  ShieldCheck,
   RotateCcw,
   ChevronRight,
-  Sparkles,
   Play,
   Pause,
   Volume2,
@@ -14,6 +12,7 @@ import {
   ExternalLink,
   CheckCircle2,
   Zap,
+  Terminal,
 } from 'lucide-react';
 
 interface ScenarioStep {
@@ -104,7 +103,6 @@ export const StagePage: React.FC = () => {
   const steps = scenario === 'A' ? SCENARIO_A_STEPS : SCENARIO_B_STEPS;
   const currentStep = steps[stepIndex] || steps[0];
 
-  // Stop auto-play on unmount or scenario switch
   useEffect(() => {
     return () => {
       if (playTimerRef.current) clearTimeout(playTimerRef.current);
@@ -202,7 +200,6 @@ export const StagePage: React.FC = () => {
       stageDriver.reset();
       setStepIndex(0);
       setStatusNote('DisputeGuard reset to initial clean seed state.');
-      // Reload iframes cleanly
       if (buyerIframeRef.current) buyerIframeRef.current.src = '/buyer';
       if (sellerIframeRef.current) sellerIframeRef.current.src = '/seller';
       if (dispatchIframeRef.current) dispatchIframeRef.current.src = '/dispatch';
@@ -219,26 +216,26 @@ export const StagePage: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen w-screen bg-slate-950 text-slate-100 font-sans overflow-hidden select-none">
-      {/* Top Judge Control Bar */}
-      <header className="h-14 bg-slate-900 border-b border-slate-800 px-4 flex items-center justify-between shrink-0 shadow-md">
+    <div className="flex flex-col h-screen w-screen bg-[#0B0F17] text-slate-100 font-sans overflow-hidden select-none antialiased">
+      {/* Precision Top Control Bar */}
+      <header className="h-12 bg-[#0D1117] border-b border-slate-800/80 px-4 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-sky-600 to-indigo-600 flex items-center justify-center font-extrabold text-white text-sm shadow-md">
+            <div className="w-6 h-6 rounded bg-slate-800 border border-slate-700 flex items-center justify-center font-bold text-xs text-white">
               DG
             </div>
             <div>
-              <span className="font-extrabold text-sm tracking-tight text-white block">
-                DisputeGuard AI
+              <span className="font-semibold text-xs tracking-tight text-white block">
+                DisputeGuard Stage
               </span>
-              <span className="text-[10px] text-sky-400 font-semibold block -mt-1">
-                Nexconn Build Challenge 2026 Judge Sandbox
+              <span className="text-[10px] text-slate-500 font-mono block -mt-0.5">
+                Judge Sandbox · 3 Synchronized Panes
               </span>
             </div>
           </div>
 
           {/* Scenario Selector */}
-          <div className="hidden sm:flex items-center bg-slate-800 p-0.5 rounded-lg border border-slate-700/80 ml-2 text-xs">
+          <div className="hidden sm:flex items-center bg-slate-900 p-0.5 rounded border border-slate-800 ml-2 text-xs font-medium">
             <button
               onClick={() => {
                 if (isPlaying) handleToggleAutoPlay();
@@ -246,9 +243,9 @@ export const StagePage: React.FC = () => {
                 setStepIndex(0);
                 setStatusNote(null);
               }}
-              className={`px-3 py-1 rounded-md font-semibold transition cursor-pointer ${
+              className={`px-2.5 py-1 rounded text-xs transition cursor-pointer ${
                 scenario === 'A'
-                  ? 'bg-sky-600 text-white shadow-xs'
+                  ? 'bg-slate-800 text-white font-semibold'
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
@@ -261,39 +258,38 @@ export const StagePage: React.FC = () => {
                 setStepIndex(0);
                 setStatusNote(null);
               }}
-              className={`px-3 py-1 rounded-md font-semibold transition cursor-pointer ${
+              className={`px-2.5 py-1 rounded text-xs transition cursor-pointer ${
                 scenario === 'B'
-                  ? 'bg-sky-600 text-white shadow-xs'
+                  ? 'bg-slate-800 text-white font-semibold'
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
-              Scenario B: Escalation Firewall & Takeover
+              Scenario B: Escalation & Takeover
             </button>
           </div>
         </div>
 
-        {/* Step progress & rehearsal controls */}
+        {/* Stepper Controls */}
         <div className="flex items-center gap-2">
           {/* Audio Mute Toggle */}
           <button
             onClick={handleToggleMute}
-            className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 hover:text-white transition cursor-pointer"
-            title={isMuted ? 'Unmute Sound Effects' : 'Mute Sound Effects'}
+            className="p-1.5 rounded bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-400 hover:text-white transition cursor-pointer"
+            title={isMuted ? 'Unmute Sound' : 'Mute Sound'}
           >
-            {isMuted ? <VolumeX className="w-4 h-4 text-rose-400" /> : <Volume2 className="w-4 h-4 text-emerald-400" />}
+            {isMuted ? <VolumeX className="w-3.5 h-3.5 text-rose-400" /> : <Volume2 className="w-3.5 h-3.5 text-slate-300" />}
           </button>
 
           {/* Stepper Controls */}
-          <div className="flex items-center bg-slate-800/90 px-3 py-1 rounded-lg border border-slate-700 text-xs text-slate-300">
-            <span className="text-slate-400 mr-2 font-medium">Progress:</span>
-            <span className="font-bold text-sky-400 mr-3">
-              Step {stepIndex + 1} of {steps.length}
+          <div className="flex items-center bg-slate-900 px-2.5 py-1 rounded border border-slate-800 text-xs text-slate-300">
+            <span className="text-slate-500 mr-2 font-mono text-[11px]">
+              Step {stepIndex + 1}/{steps.length}
             </span>
 
             <button
               onClick={handlePrevStep}
               disabled={stepIndex === 0 || isExecuting || isPlaying}
-              className="px-2 py-0.5 rounded text-xs text-slate-300 hover:text-white disabled:opacity-30 cursor-pointer"
+              className="px-1.5 py-0.5 rounded text-xs text-slate-400 hover:text-white disabled:opacity-30 cursor-pointer"
             >
               ◂ Prev
             </button>
@@ -302,34 +298,32 @@ export const StagePage: React.FC = () => {
             <button
               onClick={handleExecuteCurrentStep}
               disabled={isExecuting || isPlaying}
-              className="px-2.5 py-1 rounded bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold disabled:opacity-40 flex items-center gap-1 cursor-pointer transition active:scale-95 ml-1.5 shadow-2xs"
-              title="Execute action for current step"
+              className="px-2 py-0.5 rounded bg-sky-600 hover:bg-sky-500 text-white text-xs font-medium disabled:opacity-40 flex items-center gap-1 cursor-pointer transition active:scale-98 ml-1 shadow-2xs"
             >
-              <Zap className={`w-3.5 h-3.5 ${isExecuting ? 'animate-spin' : ''}`} />
+              <Zap className={`w-3 h-3 ${isExecuting ? 'animate-spin' : ''}`} />
               <span>{isExecuting ? 'Running...' : 'Run Step ▸'}</span>
             </button>
 
             {/* Auto Play Toggle */}
             <button
               onClick={handleToggleAutoPlay}
-              className={`px-2.5 py-1 rounded text-xs font-semibold flex items-center gap-1 cursor-pointer transition active:scale-95 ml-1.5 shadow-2xs ${
+              className={`px-2 py-0.5 rounded text-xs font-medium flex items-center gap-1 cursor-pointer transition active:scale-98 ml-1 ${
                 isPlaying
-                  ? 'bg-amber-600 hover:bg-amber-500 text-white animate-pulse'
-                  : 'bg-emerald-600 hover:bg-emerald-500 text-white'
+                  ? 'bg-amber-700 hover:bg-amber-600 text-white'
+                  : 'bg-slate-800 hover:bg-slate-700 text-slate-200'
               }`}
-              title="Automatically run through all steps"
             >
-              {isPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
-              <span>{isPlaying ? 'Pause' : 'Auto Play ⚡'}</span>
+              {isPlaying ? <Pause className="w-3 h-3" /> : <Play className="w-3 h-3" />}
+              <span>{isPlaying ? 'Pause' : 'Auto ⚡'}</span>
             </button>
 
             <button
               onClick={handleNextStep}
               disabled={stepIndex === steps.length - 1 || isExecuting || isPlaying}
-              className="px-2 py-0.5 rounded text-xs text-slate-300 hover:text-white disabled:opacity-30 flex items-center gap-0.5 cursor-pointer ml-1"
+              className="px-1.5 py-0.5 rounded text-xs text-slate-400 hover:text-white disabled:opacity-30 flex items-center cursor-pointer ml-1"
             >
               <span>Skip</span>
-              <ChevronRight className="w-3.5 h-3.5" />
+              <ChevronRight className="w-3 h-3" />
             </button>
           </div>
 
@@ -337,24 +331,24 @@ export const StagePage: React.FC = () => {
           <button
             onClick={handleReset}
             disabled={isResetting || isPlaying}
-            className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-semibold text-slate-200 flex items-center gap-1.5 transition cursor-pointer active:scale-95"
-            title="Reset database and all panes to initial seed state"
+            className="px-2.5 py-1 rounded bg-slate-900 hover:bg-slate-800 border border-slate-800 text-xs font-medium text-slate-300 flex items-center gap-1.5 transition cursor-pointer active:scale-98"
+            title="Reset database to seed state"
           >
-            <RotateCcw className={`w-3.5 h-3.5 ${isResetting ? 'animate-spin' : ''}`} />
-            <span>Reset Demo</span>
+            <RotateCcw className={`w-3 h-3 ${isResetting ? 'animate-spin' : ''}`} />
+            <span>Reset</span>
           </button>
         </div>
       </header>
 
-      {/* Three Side-by-Side Live Synchronized Panes */}
-      <div className="flex-1 grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-slate-800 bg-slate-900 overflow-hidden">
+      {/* Three Synchronized Panes */}
+      <div className="flex-1 grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-slate-800 bg-[#0B0F17] overflow-hidden">
         {/* Pane 1: Buyer Aiko (ja) */}
-        <div className="flex flex-col h-full bg-slate-100 overflow-hidden">
-          <div className="h-7 bg-slate-800 text-slate-300 px-3 flex items-center justify-between text-[11px] font-semibold border-b border-slate-700 shrink-0">
+        <div className="flex flex-col h-full bg-white overflow-hidden">
+          <div className="h-7 bg-slate-900 text-slate-300 px-3 flex items-center justify-between text-[11px] font-mono border-b border-slate-800 shrink-0">
             <div className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-400" />
-              <span className="text-white">BUYER: Aiko Tanaka</span>
-              <span className="text-slate-400 font-mono">(日本語 / ja)</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+              <span className="text-white font-medium">BUYER: Aiko Tanaka</span>
+              <span className="text-slate-500">(ja / 日本語)</span>
             </div>
             <a
               href="/buyer"
@@ -375,12 +369,12 @@ export const StagePage: React.FC = () => {
         </div>
 
         {/* Pane 2: Seller Marco (es) */}
-        <div className="flex flex-col h-full bg-slate-100 overflow-hidden">
-          <div className="h-7 bg-slate-800 text-slate-300 px-3 flex items-center justify-between text-[11px] font-semibold border-b border-slate-700 shrink-0">
+        <div className="flex flex-col h-full bg-white overflow-hidden">
+          <div className="h-7 bg-slate-900 text-slate-300 px-3 flex items-center justify-between text-[11px] font-mono border-b border-slate-800 shrink-0">
             <div className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-400" />
-              <span className="text-white">SELLER: Marco Rossi</span>
-              <span className="text-slate-400 font-mono">(Español / es)</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+              <span className="text-white font-medium">SELLER: Marco Rossi</span>
+              <span className="text-slate-500">(es / Español)</span>
             </div>
             <a
               href="/seller"
@@ -402,11 +396,11 @@ export const StagePage: React.FC = () => {
 
         {/* Pane 3: Dispatch Center Priya (en) */}
         <div className="flex flex-col h-full bg-slate-900 overflow-hidden">
-          <div className="h-7 bg-slate-800 text-slate-300 px-3 flex items-center justify-between text-[11px] font-semibold border-b border-slate-700 shrink-0">
+          <div className="h-7 bg-slate-900 text-slate-300 px-3 flex items-center justify-between text-[11px] font-mono border-b border-slate-800 shrink-0">
             <div className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-400" />
-              <span className="text-white">DISPATCH: Priya Sharma</span>
-              <span className="text-sky-400 font-mono">(Staff Arbitrator / en)</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+              <span className="text-white font-medium">DISPATCH: Priya Sharma</span>
+              <span className="text-sky-400">(en / Staff Arbitrator)</span>
             </div>
             <a
               href="/dispatch"
@@ -427,29 +421,29 @@ export const StagePage: React.FC = () => {
         </div>
       </div>
 
-      {/* Bottom Live Narration Bar */}
-      <footer className="h-16 bg-slate-900 border-t border-slate-800 px-4 py-2 flex items-center justify-between gap-3 shrink-0">
+      {/* Bottom Walkthrough Narration Bar */}
+      <footer className="h-14 bg-[#0D1117] border-t border-slate-800/80 px-4 py-2 flex items-center justify-between gap-4 shrink-0">
         <div className="flex items-center gap-3 min-w-0">
-          <div className="w-8 h-8 rounded-lg bg-sky-950 border border-sky-800/80 text-sky-400 flex items-center justify-center shrink-0">
-            <Sparkles className="w-4 h-4" />
+          <div className="w-7 h-7 rounded bg-slate-800 border border-slate-700 text-slate-300 flex items-center justify-center shrink-0">
+            <Terminal className="w-3.5 h-3.5" />
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
-              <span className="text-xs font-bold text-sky-400">{currentStep.title}</span>
-              <span className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">
-                Live Walkthrough Narration
+              <span className="text-xs font-semibold text-white">{currentStep.title}</span>
+              <span className="text-[10px] font-mono text-slate-500 uppercase tracking-wider">
+                Live Scenario Walkthrough
               </span>
             </div>
-            <p className="text-xs text-slate-300 truncate font-medium">
+            <p className="text-xs text-slate-400 truncate font-normal">
               {currentStep.narration}
             </p>
           </div>
         </div>
 
-        {/* Live action status feedback */}
+        {/* Live action status indicator */}
         {statusNote && (
-          <div className="hidden lg:flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-800 border border-slate-700 text-xs font-medium text-emerald-400 shrink-0">
-            <CheckCircle2 className="w-3.5 h-3.5" />
+          <div className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded bg-slate-900 border border-slate-800 text-xs font-mono text-emerald-400 shrink-0 num-tabular">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
             <span className="truncate max-w-sm">{statusNote}</span>
           </div>
         )}

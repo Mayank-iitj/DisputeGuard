@@ -86,16 +86,16 @@ export const Composer: React.FC<Props> = ({
             type="text"
             value={text}
             onChange={(e) => setText(e.target.value)}
-            placeholder="Type your message in your native language..."
-            className="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-3.5 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 focus:bg-white transition"
+            placeholder="Type message in your native language..."
+            className="flex-1 bg-slate-50 border border-slate-200 rounded px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-slate-900 focus:bg-white transition text-slate-900 font-medium"
           />
 
           <button
             type="submit"
             disabled={!text.trim()}
-            className="p-2 bg-sky-600 hover:bg-sky-700 disabled:opacity-40 text-white rounded-lg transition active:scale-95 shadow-sm cursor-pointer disabled:cursor-not-allowed"
+            className="p-2 bg-slate-900 hover:bg-slate-800 disabled:opacity-30 text-white rounded transition active:scale-98 cursor-pointer disabled:cursor-not-allowed"
           >
-            <Send className="w-4 h-4" />
+            <Send className="w-3.5 h-3.5" />
           </button>
         </form>
       )}

@@ -4,6 +4,9 @@ async function runSmoke() {
   console.log('--- Starting DisputeGuard Smoke Test ---');
   const { app, outbox } = await buildApp();
 
+  // Reset demo state first to guarantee clean seed state
+  await app.inject({ method: 'POST', url: '/api/v1/demo/reset' });
+
   // 1. Health check
   const healthRes = await app.inject({ method: 'GET', url: '/api/v1/health' });
   if (healthRes.statusCode !== 200) throw new Error('Health check failed');

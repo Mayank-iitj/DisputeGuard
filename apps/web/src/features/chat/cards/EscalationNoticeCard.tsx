@@ -12,19 +12,19 @@ export const EscalationNoticeCard: React.FC<Props> = ({ data, userLang = 'en' })
   const primaryNotice = notices[userLang] || notices['en'] || notices['ja'] || 'Under Review';
 
   return (
-    <div className="my-3 mx-auto w-full max-w-lg rounded-xl border border-rose-300 bg-gradient-to-r from-rose-50 via-white to-amber-50 p-4 shadow-sm text-sm">
-      <div className="flex items-center gap-2 pb-2 border-b border-rose-100 text-rose-900 font-semibold">
-        <ShieldAlert className="w-4 h-4 text-rose-600" />
+    <div className="my-2.5 mx-auto w-full max-w-lg rounded-lg border border-rose-200 bg-rose-50/40 p-3.5 shadow-xs text-xs antialiased">
+      <div className="flex items-center gap-1.5 pb-2 border-b border-rose-100 text-rose-900 font-medium">
+        <ShieldAlert className="w-3.5 h-3.5 text-rose-600" />
         <span>Case Escalated to DisputeGuard Dispatch</span>
       </div>
 
-      <div className="mt-3 flex items-start gap-2.5">
-        <div className="w-8 h-8 rounded-full bg-rose-100 flex items-center justify-center shrink-0 text-rose-600 mt-0.5">
-          <Lock className="w-4 h-4" />
+      <div className="mt-2.5 flex items-start gap-2.5">
+        <div className="w-6 h-6 rounded bg-rose-100 flex items-center justify-center shrink-0 text-rose-600 mt-0.5">
+          <Lock className="w-3.5 h-3.5" />
         </div>
-        <div className="space-y-1">
-          <p className="text-xs font-semibold text-slate-900">{primaryNotice}</p>
-          <p className="text-[11px] text-slate-500">
+        <div className="space-y-0.5">
+          <p className="text-xs font-semibold text-slate-900 leading-tight">{primaryNotice}</p>
+          <p className="text-[11px] text-slate-500 leading-relaxed">
             Escrow protection active · A staff arbitrator has joined to ensure fair resolution.
           </p>
         </div>

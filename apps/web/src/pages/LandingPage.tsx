@@ -5,191 +5,194 @@ import {
   Languages,
   Camera,
   Scale,
-  Sparkles,
   ArrowRight,
   ExternalLink,
   Lock,
   Cpu,
   Layers,
+  CheckCircle2,
 } from 'lucide-react';
 
 export const LandingPage: React.FC = () => {
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans flex flex-col">
-      {/* Navbar */}
-      <nav className="h-16 border-b border-slate-800 px-6 flex items-center justify-between max-w-7xl mx-auto w-full">
-        <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center font-extrabold text-white text-base shadow-lg shadow-sky-500/20">
+    <div className="min-h-screen bg-[#090D16] text-slate-100 font-sans flex flex-col antialiased">
+      {/* Precision Top Navigation */}
+      <header className="h-14 border-b border-slate-800/80 px-6 flex items-center justify-between max-w-7xl mx-auto w-full shrink-0">
+        <div className="flex items-center gap-3">
+          <div className="w-7 h-7 rounded-md bg-slate-800 border border-slate-700 flex items-center justify-center font-bold text-xs text-white tracking-wider">
             DG
           </div>
-          <div>
-            <span className="font-extrabold text-base tracking-tight text-white block">
-              DisputeGuard AI
+          <div className="flex items-baseline gap-2">
+            <span className="font-semibold text-sm tracking-tight text-white">
+              DisputeGuard
             </span>
-            <span className="text-[10px] text-sky-400 font-semibold block -mt-1">
-              Built on Nexconn Chat SDK
+            <span className="text-[11px] text-slate-500 font-medium hidden sm:inline">
+              Escrow Dispute Engine for Nexconn
             </span>
           </div>
         </div>
 
-        <div className="flex items-center gap-4 text-xs font-semibold">
+        <nav className="flex items-center gap-5 text-xs font-medium">
           <Link
             to="/buyer"
-            className="text-slate-300 hover:text-white transition hidden sm:inline-block"
+            className="text-slate-400 hover:text-slate-200 transition hidden sm:inline-block"
           >
             Buyer Portal
           </Link>
           <Link
             to="/seller"
-            className="text-slate-300 hover:text-white transition hidden sm:inline-block"
+            className="text-slate-400 hover:text-slate-200 transition hidden sm:inline-block"
           >
             Seller Portal
           </Link>
           <Link
             to="/dispatch"
-            className="text-slate-300 hover:text-white transition hidden sm:inline-block"
+            className="text-slate-400 hover:text-slate-200 transition hidden sm:inline-block"
           >
             Dispatch Console
           </Link>
           <Link
             to="/stage"
-            className="px-4 py-2 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white font-bold shadow-lg shadow-sky-500/25 transition active:scale-95 flex items-center gap-1.5"
+            className="px-3.5 py-1.5 rounded-md bg-white hover:bg-slate-100 text-slate-950 font-semibold text-xs transition active:scale-98 flex items-center gap-1.5 shadow-xs"
           >
-            <span>Launch Judge Stage</span>
+            <span>Judge Sandbox (/stage)</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </Link>
-        </div>
-      </nav>
+        </nav>
+      </header>
 
       {/* Hero Section */}
-      <main className="flex-1 max-w-5xl mx-auto px-6 py-16 flex flex-col items-center text-center">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-950/80 border border-sky-800 text-sky-400 text-xs font-semibold mb-6">
-          <Sparkles className="w-3.5 h-3.5" />
-          <span>Nexconn Build Challenge 2026 Submission</span>
-        </div>
-
-        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white max-w-3xl leading-tight">
-          Cross-border disputes, resolved{' '}
-          <span className="bg-gradient-to-r from-sky-400 via-indigo-300 to-purple-400 bg-clip-text text-transparent">
-            inside the chat
-          </span>{' '}
-          where they start.
+      <main className="flex-1 max-w-5xl mx-auto px-6 pt-20 pb-16 flex flex-col items-center text-center">
+        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight text-white max-w-3xl leading-[1.12]">
+          Cross-border disputes, resolved inside the chat where they start.
         </h1>
 
-        <p className="mt-5 text-base sm:text-lg text-slate-400 max-w-2xl leading-relaxed">
-          Every order dispute becomes a Nexconn channel with a translated conversation, structured
-          evidence cards, a bounded refund proposal, an escrow state machine, and a human dispatch
-          center for cases above policy threshold.
+        <p className="mt-6 text-base sm:text-lg text-slate-400 max-w-2xl leading-relaxed font-normal">
+          Every order dispute becomes a synchronized Nexconn channel with real-time translation,
+          guided photo evidence, deterministic policy proposals, and an automated escalation firewall.
         </p>
 
-        {/* Action Buttons */}
-        <div className="mt-8 flex flex-col sm:flex-row items-center gap-4">
+        {/* Action Controls */}
+        <div className="mt-8 flex flex-col sm:flex-row items-center gap-3">
           <Link
             to="/stage"
-            className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-white font-bold text-sm shadow-xl shadow-sky-500/30 transition active:scale-95 flex items-center justify-center gap-2"
+            className="w-full sm:w-auto px-6 py-2.5 rounded-md bg-white hover:bg-slate-200 text-slate-950 font-semibold text-xs transition active:scale-98 flex items-center justify-center gap-2 shadow-xs"
           >
-            <span>Open Judge 3-Pane Sandbox (/stage)</span>
-            <ArrowRight className="w-4 h-4" />
+            <span>Open Flagship 3-Pane Stage</span>
+            <ArrowRight className="w-3.5 h-3.5" />
           </Link>
-          <a
-            href="https://github.com"
-            target="_blank"
-            rel="noreferrer"
-            className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 font-semibold text-sm transition flex items-center justify-center gap-2"
+          <Link
+            to="/dispatch"
+            className="w-full sm:w-auto px-5 py-2.5 rounded-md bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 font-medium text-xs transition flex items-center justify-center gap-2"
           >
-            <span>View Architecture Docs</span>
-            <ExternalLink className="w-4 h-4 text-slate-500" />
-          </a>
+            <span>Open Dispatch Console</span>
+          </Link>
         </div>
 
-        {/* Signature Features Grid */}
-        <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-6 text-left w-full">
-          <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800/80 shadow-md">
-            <div className="w-10 h-10 rounded-xl bg-sky-950 border border-sky-800 flex items-center justify-center text-sky-400 mb-4">
-              <Languages className="w-5 h-5" />
-            </div>
-            <h3 className="font-bold text-white text-base mb-2">Cross-Border Translation</h3>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              Native real-time translation with one-tap toggle to original text. Flags politeness
-              masking where formal phrasing conceals elevated frustration.
-            </p>
+        {/* Operational Blueprint (Editorial Layout replacing cookie-cutter cards) */}
+        <section className="mt-20 w-full text-left">
+          <div className="border-b border-slate-800/80 pb-3 mb-6 flex items-baseline justify-between">
+            <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+              System Architecture
+            </h2>
+            <span className="text-xs text-slate-500 font-mono">Nexconn Chat SDK · Fastify · SQLite</span>
           </div>
 
-          <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800/80 shadow-md">
-            <div className="w-10 h-10 rounded-xl bg-indigo-950 border border-indigo-800 flex items-center justify-center text-indigo-400 mb-4">
-              <Camera className="w-5 h-5" />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Column 1: Conversation Plane */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 text-slate-200 text-sm font-semibold">
+                <Languages className="w-4 h-4 text-sky-400" />
+                <span>1. Conversation Plane</span>
+              </div>
+              <p className="text-xs text-slate-400 leading-relaxed">
+                Native dual-language chat running over Nexconn. Aiko writes Japanese, Marco reads
+                Spanish with one-tap access to original phrasing. Cultural politeness masking is
+                detected when formal phrasing hides latent frustration.
+              </p>
+              <ul className="text-xs text-slate-400 space-y-1 pt-1 font-mono text-[11px]">
+                <li className="flex items-center gap-1.5">
+                  <span className="w-1 h-1 rounded-full bg-sky-400" />
+                  <span>Typed message envelopes (DG1)</span>
+                </li>
+                <li className="flex items-center gap-1.5">
+                  <span className="w-1 h-1 rounded-full bg-sky-400" />
+                  <span>Cross-iframe broadcast bus (&lt;5ms)</span>
+                </li>
+              </ul>
             </div>
-            <h3 className="font-bold text-white text-base mb-2">Proof-First Evidence</h3>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              Guided 3-angle photo capture stepper. AI vision model scores severity 0-3 with perceptual
-              hashing and an explicit "AI-assessed, not verified" label.
-            </p>
-          </div>
 
-          <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800/80 shadow-md">
-            <div className="w-10 h-10 rounded-xl bg-emerald-950 border border-emerald-800 flex items-center justify-center text-emerald-400 mb-4">
-              <Scale className="w-5 h-5" />
+            {/* Column 2: Control Plane */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 text-slate-200 text-sm font-semibold">
+                <Scale className="w-4 h-4 text-emerald-400" />
+                <span>2. Deterministic Control</span>
+              </div>
+              <p className="text-xs text-slate-400 leading-relaxed">
+                Code computes, AI only proposes. Policy Engine (v1) outputs bounded options with a
+                $50.00 auto-approval ceiling. Counters are strictly bound to 50%–150%. Escrow operates
+                as an append-only state machine ledger.
+              </p>
+              <ul className="text-xs text-slate-400 space-y-1 pt-1 font-mono text-[11px]">
+                <li className="flex items-center gap-1.5">
+                  <span className="w-1 h-1 rounded-full bg-emerald-400" />
+                  <span>Immutable ACID escrow ledger</span>
+                </li>
+                <li className="flex items-center gap-1.5">
+                  <span className="w-1 h-1 rounded-full bg-emerald-400" />
+                  <span>Strict auto-settle ceiling ($50.00)</span>
+                </li>
+              </ul>
             </div>
-            <h3 className="font-bold text-white text-base mb-2">Bounded Settlements</h3>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              Deterministic policy engine computes exact options. Both parties accept under $50.00
-              ceiling to auto-settle; mutual agreement above moves to agent review.
-            </p>
-          </div>
 
-          <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800/80 shadow-md">
-            <div className="w-10 h-10 rounded-xl bg-rose-950 border border-rose-800 flex items-center justify-center text-rose-400 mb-4">
-              <Lock className="w-5 h-5" />
+            {/* Column 3: Escalation Firewall */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 text-slate-200 text-sm font-semibold">
+                <Lock className="w-4 h-4 text-rose-400" />
+                <span>3. Escalation Firewall</span>
+              </div>
+              <p className="text-xs text-slate-400 leading-relaxed">
+                Cross-cultural lexicon actively monitors chargeback, legal, or fraud threats.
+                Triggering keywords immediately freeze escrow, post calm neutral notices to both parties,
+                and route the case to the human Dispatch Center.
+              </p>
+              <ul className="text-xs text-slate-400 space-y-1 pt-1 font-mono text-[11px]">
+                <li className="flex items-center gap-1.5">
+                  <span className="w-1 h-1 rounded-full bg-rose-400" />
+                  <span>Priority queue score: 0 to 100</span>
+                </li>
+                <li className="flex items-center gap-1.5">
+                  <span className="w-1 h-1 rounded-full bg-rose-400" />
+                  <span>Arbitrator AI brief & copilot draft</span>
+                </li>
+              </ul>
             </div>
-            <h3 className="font-bold text-white text-base mb-2">Escalation Firewall</h3>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              Monitors threats across languages (chargebacks, police, lawsuits) and instantly freezes
-              escrow while posting calm bilingual notices without exposing risk details.
-            </p>
           </div>
+        </section>
 
-          <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800/80 shadow-md">
-            <div className="w-10 h-10 rounded-xl bg-purple-950 border border-purple-800 flex items-center justify-center text-purple-400 mb-4">
-              <Cpu className="w-5 h-5" />
+        {/* Grounded Invariant Strip */}
+        <section className="mt-14 w-full p-4 rounded-lg bg-slate-900/50 border border-slate-800 text-left flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-start sm:items-center gap-3">
+            <ShieldCheck className="w-5 h-5 text-slate-400 shrink-0 mt-0.5 sm:mt-0" />
+            <div>
+              <span className="text-xs font-semibold text-slate-200 block">
+                Core Safety Guarantee
+              </span>
+              <span className="text-xs text-slate-400">
+                AI proposes, code computes, a human approves above threshold. Prompt injection cannot move funds.
+              </span>
             </div>
-            <h3 className="font-bold text-white text-base mb-2">Dispatch Center</h3>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              Mission-control console with priority formula, AI Case Brief, grounded copilot drafting
-              with regex amount guards, and one-click resolution.
-            </p>
           </div>
-
-          <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800/80 shadow-md">
-            <div className="w-10 h-10 rounded-xl bg-amber-950 border border-amber-800 flex items-center justify-center text-amber-400 mb-4">
-              <Layers className="w-5 h-5" />
-            </div>
-            <h3 className="font-bold text-white text-base mb-2">Immutable Escrow Ledger</h3>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              Append-only state machine. Every monetary transition requires an actor and reason code.
-              LLM never moves money and never chooses a refund number.
-            </p>
-          </div>
-        </div>
-
-        {/* Non-negotiable principles callout */}
-        <div className="mt-16 w-full p-6 rounded-2xl bg-gradient-to-r from-slate-900 via-sky-950/40 to-slate-900 border border-slate-800 text-left">
-          <div className="flex items-center gap-2 text-sky-400 text-xs font-bold uppercase tracking-wide mb-2">
-            <ShieldCheck className="w-4 h-4" />
-            <span>Guiding Architecture Principle</span>
-          </div>
-          <p className="text-sm font-semibold text-white">
-            "AI proposes, code computes, a human approves above a threshold."
-          </p>
-          <p className="text-xs text-slate-400 mt-1">
-            Prompt injection and hallucinations cannot move funds. The database is the source of truth;
-            Nexconn is the live conversation and card bus users see.
-          </p>
-        </div>
+          <span className="text-[11px] font-mono text-slate-500 whitespace-nowrap self-end sm:self-auto">
+            Nexconn Build Challenge 2026
+          </span>
+        </section>
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-slate-900 py-6 text-center text-xs text-slate-500">
-        DisputeGuard AI — Built for the Nexconn Build Challenge 2026.
+      {/* Minimal Footer */}
+      <footer className="border-t border-slate-900 py-5 text-center text-xs text-slate-500 max-w-7xl mx-auto w-full px-6 flex flex-col sm:flex-row justify-between items-center gap-2">
+        <span>DisputeGuard AI — Built on Nexconn Chat SDK</span>
+        <span className="font-mono text-[11px]">MIT License · Production Ready</span>
       </footer>
     </div>
   );

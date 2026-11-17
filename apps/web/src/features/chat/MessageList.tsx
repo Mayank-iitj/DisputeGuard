@@ -133,10 +133,10 @@ export const MessageList: React.FC<Props> = ({
 
             {/* Bubble */}
             <div
-              className={`rounded-2xl px-3.5 py-2.5 text-xs shadow-2xs leading-relaxed ${
+              className={`rounded-lg px-3 py-2 text-xs leading-relaxed ${
                 isMine
-                  ? 'bg-sky-600 text-white rounded-br-xs'
-                  : 'bg-white text-slate-800 border border-slate-200 rounded-bl-xs'
+                  ? 'bg-slate-900 text-white'
+                  : 'bg-white text-slate-900 border border-slate-200'
               }`}
             >
               <p>{displayText}</p>
@@ -144,21 +144,21 @@ export const MessageList: React.FC<Props> = ({
 
             {/* Translation footer and tone note */}
             {!isMine && isTranslated && trans && (
-              <div className="mt-1 px-1 flex flex-col gap-0.5 text-[11px] text-slate-500">
+              <div className="mt-1 px-1 flex flex-col gap-0.5 text-[11px] text-slate-500 font-mono">
                 <div className="flex items-center gap-1">
                   <Languages className="w-3 h-3 text-slate-400" />
                   <span>Translated from {trans.sourceLang.toUpperCase()} · </span>
                   <button
                     onClick={() => toggleShowOriginal(msg.uid)}
-                    className="text-sky-600 hover:text-sky-700 underline font-medium cursor-pointer"
+                    className="text-slate-700 hover:text-slate-900 underline cursor-pointer"
                   >
                     {trans.showOriginal ? 'Show translation' : 'Show original'}
                   </button>
                 </div>
 
                 {trans.toneNote && (
-                  <div className="inline-flex items-center gap-1 text-[10px] font-medium text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
-                    <Info className="w-3 h-3 text-amber-500" />
+                  <div className="inline-flex items-center gap-1 text-[10px] font-sans font-medium text-amber-800 bg-amber-50/80 px-2 py-0.5 rounded border border-amber-200 mt-0.5">
+                    <Info className="w-3 h-3 text-amber-600" />
                     <span>{trans.toneNote}</span>
                   </div>
                 )}
