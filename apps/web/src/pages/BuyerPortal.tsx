@@ -1,0 +1,414 @@
+import React, { useEffect, useState } from 'react';
+import { api } from '../api/client';
+import { getChatClient } from '../nexconn/client';
+import { ChatMessage } from '../nexconn/port';
+import { MessageList } from '../features/chat/MessageList';
+import { Composer } from '../features/chat/Composer';
+import { EvidenceModal } from '../features/evidence/EvidenceModal';
+import { CounterSheet } from '../features/chat/CounterSheet';
+import {
+  Package,
+  ShieldCheck,
+  AlertCircle,
+  ArrowLeft,
+  Camera,
+  CheckCircle2,
+  Clock,
+  Sparkles,
+  Lock,
+} from 'lucide-react';
+
+export const BuyerPortal: React.FC = () => {
+  const [user, setUser] = useState<any>(null);
+  const [orders, setOrders] = useState<any[]>([]);
+  const [activeDispute, setActiveDispute] = useState<any>(null);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [connStatus, setConnStatus] = useState<string>('disconnected');
+
+  // Modals
+  const [showReportModal, setShowReportModal] = useState<boolean>(false);
+  const [selectedOrder, setSelectedOrder] = useState<any>(null);
+  const [reportReason, setReportReason] = useState<string>('damaged');
+  const [reportText, setReportText] = useState<string>('コップが割れていました');
+  const [showEvidenceModal, setShowEvidenceModal] = useState<boolean>(false);
+  const [showCounterSheet, setShowCounterSheet] = useState<boolean>(false);
+  const [selectedOptionForCounter, setSelectedOptionForCounter] = useState<any>(null);
+
+  const chat = getChatClient();
+
+  useEffect(() => {
+    // Login as buyer_aiko
+    api.loginPersona('buyer_aiko').then((res) => {
+      setUser(res.user);
+      chat.init(res.nexconn.appKey);
+      chat.connect(res.nexconn.token, res.user.id);
+      loadOrders();
+    });
+
+    const unsubConn = chat.onConnection((s) => setConnStatus(s));
+    const unsubMsg = chat.onMessage((m) => {
+      setMessages((prev) => [...prev, m]);
+      // If resolution card received, update dispute status
+      if (m.kind === 'envelope' && m.env.kind === 'card.resolution') {
+        setActiveDispute((prev: any) => (prev ? { ...prev, status: 'RESOLVED' } : prev));
+      }
+    });
+
+    return () => {
+      unsubConn();
+      unsubMsg();
+    };
+  }, []);
+
+  const loadOrders = async () => {
+    try {
+      const res = await api.getOrders();
+      setOrders(res.items);
+      // Auto-open dispute if ord_1042 has one
+      const disputed = res.items.find((o) => o.disputeId);
+      if (disputed && disputed.disputeId) {
+        openDispute(disputed.disputeId);
+      }
+    } catch (e) {
+      console.error('Failed to load orders:', e);
+    }
+  };
+
+  const openDispute = async (disputeId: string) => {
+    try {
+      const data = await api.getDispute(disputeId);
+      setActiveDispute(data);
+      chat.joinChannel(data.channelId);
+    } catch (e) {
+      console.error('Failed to fetch dispute:', e);
+    }
+  };
+
+  const handleCreateDispute = async () => {
+    if (!selectedOrder) return;
+    try {
+      const res = await api.createDispute(selectedOrder.id, reportReason as any, reportText);
+      setShowReportModal(false);
+      setActiveDispute(res);
+      chat.joinChannel(res.channelId);
+      loadOrders();
+    } catch (e) {
+      console.error('Failed to open dispute:', e);
+    }
+  };
+
+  const handleSendMessage = async (text: string) => {
+    if (!activeDispute) return;
+    const { uid } = await chat.sendText(activeDispute.channelId, text);
+    // Observe call for server risk scoring
+    try {
+      const obs = await api.observe(activeDispute.id, uid, text);
+      if (obs.risk?.frozen) {
+        setActiveDispute((prev: any) => ({
+          ...prev,
+          frozen: true,
+          risk: { ...prev.risk, frozen: true, band: 'high' },
+        }));
+      }
+    } catch (e) {
+      console.warn('Observe call failed:', e);
+    }
+  };
+
+  const handleAcceptProposal = async (optionId: string) => {
+    if (!activeDispute || !activeDispute.proposal) return;
+    try {
+      await api.respondProposal(activeDispute.id, activeDispute.proposal.id, 'accept', optionId);
+      // Refresh dispute
+      const updated = await api.getDispute(activeDispute.id);
+      setActiveDispute(updated);
+    } catch (e) {
+      console.error('Error accepting proposal:', e);
+    }
+  };
+
+  const handleOpenCounter = (optionId: string) => {
+    if (!activeDispute || !activeDispute.proposal) return;
+    const opt = activeDispute.proposal.options.find((o: any) => o.id === optionId);
+    setSelectedOptionForCounter(opt);
+    setShowCounterSheet(true);
+  };
+
+  const handleConfirmCounter = async (counterMinor: number) => {
+    if (!activeDispute || !activeDispute.proposal || !selectedOptionForCounter) return;
+    try {
+      await api.respondProposal(
+        activeDispute.id,
+        activeDispute.proposal.id,
+        'counter',
+        selectedOptionForCounter.id,
+        { value: counterMinor, currency: 'USD' }
+      );
+      const updated = await api.getDispute(activeDispute.id);
+      setActiveDispute(updated);
+    } catch (e) {
+      console.error('Error submitting counter:', e);
+    }
+  };
+
+  const handleDeclineProposal = async (optionId: string) => {
+    if (!activeDispute || !activeDispute.proposal) return;
+    try {
+      await api.respondProposal(activeDispute.id, activeDispute.proposal.id, 'decline', optionId);
+      const updated = await api.getDispute(activeDispute.id);
+      setActiveDispute(updated);
+    } catch (e) {
+      console.error('Error declining proposal:', e);
+    }
+  };
+
+  const handleSubmitEvidence = async (files: any[]) => {
+    if (!activeDispute) return;
+    try {
+      await api.submitEvidence(activeDispute.id, files);
+      setShowEvidenceModal(false);
+      const updated = await api.getDispute(activeDispute.id);
+      setActiveDispute(updated);
+    } catch (e) {
+      console.error('Error uploading evidence:', e);
+    }
+  };
+
+  const isResolved = activeDispute?.status === 'RESOLVED' || activeDispute?.status === 'CLOSED';
+  const isFrozen = activeDispute?.frozen || activeDispute?.risk?.frozen;
+
+  return (
+    <div className="flex flex-col h-full bg-slate-50 font-sans">
+      {/* Top Bar */}
+      <header className="h-13 bg-white border-b border-slate-200 px-4 flex items-center justify-between shadow-2xs shrink-0">
+        <div className="flex items-center gap-2">
+          {activeDispute ? (
+            <button
+              onClick={() => setActiveDispute(null)}
+              className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-600 transition cursor-pointer"
+            >
+              <ArrowLeft className="w-4 h-4" />
+            </button>
+          ) : (
+            <Package className="w-5 h-5 text-sky-600" />
+          )}
+          <div>
+            <h1 className="text-xs font-bold text-slate-900">
+              {activeDispute ? activeDispute.orderTitle : 'My Orders'}
+            </h1>
+            <span className="text-[10px] text-slate-500 block -mt-0.5">
+              Buyer Portal · Aiko Tanaka (日本語)
+            </span>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          {activeDispute && (
+            <div
+              className={`flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-full border ${
+                isFrozen
+                  ? 'bg-rose-100 text-rose-800 border-rose-200'
+                  : 'bg-emerald-100 text-emerald-800 border-emerald-200'
+              }`}
+            >
+              {isFrozen ? <Lock className="w-3 h-3 text-rose-600" /> : <ShieldCheck className="w-3 h-3 text-emerald-600" />}
+              <span>{isFrozen ? 'Escrow: FROZEN' : 'Escrow: HELD'}</span>
+            </div>
+          )}
+
+          {/* Connection dot */}
+          <span
+            className={`w-2 h-2 rounded-full ${
+              connStatus === 'connected' ? 'bg-emerald-500' : 'bg-amber-400'
+            }`}
+            title={`Nexconn status: ${connStatus}`}
+          />
+        </div>
+      </header>
+
+      {/* Main content: Either Orders list or Dispute Chat */}
+      {!activeDispute ? (
+        <div className="flex-1 overflow-y-auto p-4 space-y-3">
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-xs font-bold text-slate-700 uppercase tracking-wide">
+              Recent Purchases
+            </span>
+            <span className="text-xs text-slate-400">Buyer Protection Active</span>
+          </div>
+
+          {orders.map((ord) => {
+            const isDelivered = ord.status === 'delivered';
+            const isDisputed = ord.status === 'disputed' || ord.disputeId;
+
+            return (
+              <div
+                key={ord.id}
+                className="bg-white rounded-xl border border-slate-200 p-4 shadow-2xs flex items-center justify-between gap-4"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center overflow-hidden shrink-0">
+                    <Package className="w-6 h-6 text-slate-400" />
+                  </div>
+                  <div>
+                    <h3 className="text-xs font-bold text-slate-900">{ord.title}</h3>
+                    <div className="flex items-center gap-2 text-[11px] text-slate-500 mt-0.5">
+                      <span>Order {ord.id}</span>
+                      <span>·</span>
+                      <span className="font-semibold text-slate-800">
+                        ${(ord.amount.value / 100).toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  {isDisputed ? (
+                    <button
+                      onClick={() => openDispute(ord.disputeId)}
+                      className="px-3 py-1.5 bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer"
+                    >
+                      <ShieldCheck className="w-3.5 h-3.5 text-sky-600" />
+                      <span>View Dispute</span>
+                    </button>
+                  ) : isDelivered ? (
+                    <button
+                      onClick={() => {
+                        setSelectedOrder(ord);
+                        setShowReportModal(true);
+                      }}
+                      className="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer"
+                    >
+                      <AlertCircle className="w-3.5 h-3.5 text-rose-600" />
+                      <span>Report a Problem</span>
+                    </button>
+                  ) : (
+                    <span className="text-xs text-slate-400 capitalize">{ord.status}</span>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        <div className="flex-1 flex flex-col overflow-hidden">
+          <MessageList
+            messages={messages}
+            currentUserId={user?.id || 'u_buyer_aiko'}
+            isBuyer={true}
+            userLang="ja"
+            counterpartName="Marco (Seller)"
+            disputeId={activeDispute.id}
+            isFrozen={isFrozen}
+            onOpenUpload={() => setShowEvidenceModal(true)}
+            onAcceptProposal={handleAcceptProposal}
+            onCounterProposal={handleOpenCounter}
+            onDeclineProposal={handleDeclineProposal}
+          />
+
+          <Composer
+            disabled={isResolved}
+            disabledReason="Dispute has been settled. Escrow released."
+            onSend={handleSendMessage}
+            onAttach={() => setShowEvidenceModal(true)}
+            userLang="ja"
+          />
+        </div>
+      )}
+
+      {/* 2-Step Report a Problem Modal */}
+      {showReportModal && selectedOrder && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4">
+          <div className="w-full max-w-md bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
+            <div className="p-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
+              <span className="font-bold text-slate-800 text-sm">Report a Problem</span>
+              <button
+                onClick={() => setShowReportModal(false)}
+                className="text-slate-400 hover:text-slate-600"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="p-5 space-y-4 text-xs">
+              <p className="text-slate-600">
+                Opening dispute for <strong>{selectedOrder.title}</strong> (${(selectedOrder.amount.value / 100).toFixed(2)}).
+                Your payment stays protected in escrow while we resolve this.
+              </p>
+
+              <div>
+                <label className="font-semibold text-slate-700 block mb-1.5">What went wrong?</label>
+                <div className="grid grid-cols-2 gap-2">
+                  {[
+                    { id: 'damaged', label: 'Damaged item' },
+                    { id: 'wrong_item_or_size', label: 'Wrong item or size' },
+                    { id: 'not_received', label: 'Not received' },
+                    { id: 'not_as_described', label: 'Not as described' },
+                  ].map((r) => (
+                    <button
+                      key={r.id}
+                      type="button"
+                      onClick={() => setReportReason(r.id)}
+                      className={`p-2.5 rounded-lg border text-left font-semibold transition cursor-pointer ${
+                        reportReason === r.id
+                          ? 'border-sky-500 bg-sky-50 text-sky-900'
+                          : 'border-slate-200 hover:border-slate-300 text-slate-700'
+                      }`}
+                    >
+                      {r.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="font-semibold text-slate-700 block mb-1">
+                  Describe the issue (in your language):
+                </label>
+                <textarea
+                  rows={2}
+                  value={reportText}
+                  onChange={(e) => setReportText(e.target.value)}
+                  className="w-full p-2 border border-slate-200 rounded-lg text-xs"
+                />
+              </div>
+
+              <div className="pt-2 flex gap-2">
+                <button
+                  onClick={() => setShowReportModal(false)}
+                  className="flex-1 py-2 border border-slate-300 rounded-lg font-semibold text-slate-700"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleCreateDispute}
+                  className="flex-1 py-2 bg-sky-600 hover:bg-sky-700 text-white font-semibold rounded-lg shadow-sm"
+                >
+                  Start Dispute
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Evidence Capture Modal */}
+      <EvidenceModal
+        isOpen={showEvidenceModal}
+        onClose={() => setShowEvidenceModal(false)}
+        onSubmit={handleSubmitEvidence}
+      />
+
+      {/* Counter Slider Sheet */}
+      {selectedOptionForCounter && activeDispute && (
+        <CounterSheet
+          isOpen={showCounterSheet}
+          onClose={() => setShowCounterSheet(false)}
+          optionTitle={selectedOptionForCounter.title}
+          originalRefundMinor={selectedOptionForCounter.buyerGets.value}
+          orderTotalMinor={activeDispute.orderAmount?.value || 8400}
+          onConfirm={handleConfirmCounter}
+        />
+      )}
+    </div>
+  );
+};

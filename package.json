@@ -1,0 +1,19 @@
+{
+  "name": "disputeguard-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "DisputeGuard AI: Multilingual escrow dispute resolution built on Nexconn Chat SDK",
+  "scripts": {
+    "dev": "concurrently -k -p \"[{name}]\" -n \"API,WEB\" -c \"cyan,magenta\" \"pnpm --filter @dg/api dev\" \"pnpm --filter @dg/web dev\"",
+    "dev:api": "pnpm --filter @dg/api dev",
+    "dev:web": "pnpm --filter @dg/web dev",
+    "build": "pnpm --filter @dg/shared build && pnpm --filter @dg/api build && pnpm --filter @dg/web build",
+    "test": "pnpm --filter @dg/api test",
+    "db:seed": "pnpm --filter @dg/api db:seed",
+    "smoke": "pnpm --filter @dg/api run smoke"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "typescript": "^5.7.3"
+  }
+}
