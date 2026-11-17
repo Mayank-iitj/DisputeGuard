@@ -194,3 +194,4 @@ From our benchmark evaluation in `docs/eval-results.md`:
 ## 📄 License
 
 MIT License. Designed and built with pride for the **Nexconn Build Challenge 2026**.
+# DisputeGuard
