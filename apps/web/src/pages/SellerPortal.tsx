@@ -43,9 +43,25 @@ export const SellerPortal: React.FC = () => {
       }
     });
 
+    let bc: BroadcastChannel | null = null;
+    if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
+      bc = new BroadcastChannel('disputeguard_realtime_bus');
+      bc.onmessage = (event) => {
+        if (event.data?.type === 'stage_action') {
+          if (event.data.action === 'select_dispute' && event.data.disputeId) {
+            openDispute(event.data.disputeId);
+          } else if (event.data.action === 'refresh_dispute') {
+            loadOrders();
+            if (event.data.disputeId) openDispute(event.data.disputeId);
+          }
+        }
+      };
+    }
+
     return () => {
       unsubConn();
       unsubMsg();
+      bc?.close();
     };
   }, []);
 

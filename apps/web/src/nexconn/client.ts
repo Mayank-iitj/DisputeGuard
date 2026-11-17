@@ -1,6 +1,7 @@
 import { ChatMessage, ChatPort } from './port';
 import { parseDgEnvelope } from '@dg/shared';
 import { api } from '../api/client';
+import { soundFx } from '../services/soundFx';
 
 export class FallbackChatImpl implements ChatPort {
   private ws: WebSocket | null = null;
@@ -191,6 +192,13 @@ export class FallbackChatImpl implements ChatPort {
         ts: raw.ts || env.ts || Date.now(),
         env,
       };
+      if (env.kind === 'card.escalation_notice') {
+        soundFx.playFreeze();
+      } else if (env.kind === 'card.resolution') {
+        soundFx.playResolution();
+      } else {
+        soundFx.playCard();
+      }
     } else {
       chatMsg = {
         kind: 'text',
@@ -200,6 +208,7 @@ export class FallbackChatImpl implements ChatPort {
         ts: raw.ts || Date.now(),
         text: raw.text,
       };
+      soundFx.playMessage();
     }
 
     this.messageBuffer.push(chatMsg);

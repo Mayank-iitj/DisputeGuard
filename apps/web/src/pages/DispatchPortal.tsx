@@ -36,14 +36,65 @@ export const DispatchPortal: React.FC = () => {
       }
     });
 
+    let bc: BroadcastChannel | null = null;
+    if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
+      bc = new BroadcastChannel('disputeguard_realtime_bus');
+      bc.onmessage = (event) => {
+        if (event.data?.type === 'stage_action') {
+          if (event.data.action === 'select_dispatch' && event.data.disputeId) {
+            handleSelectDispute(event.data.disputeId);
+            refreshQueue();
+          } else if (event.data.action === 'refresh_dispute') {
+            refreshData();
+            if (event.data.disputeId) {
+              handleSelectDispute(event.data.disputeId);
+            }
+          }
+        }
+      };
+    }
+
     // Polling interval for live queue and metrics
     const timer = setInterval(() => {
       refreshData();
     }, 5000);
 
+    // Keyboard shortcuts (j/k queue navigation, t to takeover)
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const activeTag = (document.activeElement?.tagName || '').toLowerCase();
+      if (activeTag === 'input' || activeTag === 'textarea') return;
+
+      if (e.key === 'j' || e.key === 'ArrowDown') {
+        e.preventDefault();
+        setQueueItems((currentItems) => {
+          if (currentItems.length === 0) return currentItems;
+          const idx = currentItems.findIndex((it) => it.disputeId === selectedDisputeId);
+          const nextIdx = idx < currentItems.length - 1 ? idx + 1 : 0;
+          handleSelectDispute(currentItems[nextIdx].disputeId);
+          return currentItems;
+        });
+      } else if (e.key === 'k' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        setQueueItems((currentItems) => {
+          if (currentItems.length === 0) return currentItems;
+          const idx = currentItems.findIndex((it) => it.disputeId === selectedDisputeId);
+          const prevIdx = idx > 0 ? idx - 1 : currentItems.length - 1;
+          handleSelectDispute(currentItems[prevIdx].disputeId);
+          return currentItems;
+        });
+      } else if (e.key === 't' || e.key === 'T') {
+        e.preventDefault();
+        handleTakeover();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
     return () => {
       unsubMsg();
+      bc?.close();
       clearInterval(timer);
+      window.removeEventListener('keydown', handleKeyDown);
     };
   }, []);
 
