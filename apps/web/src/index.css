@@ -12,34 +12,62 @@
   }
 
   ::selection {
-    background-color: #0284c7;
-    color: #ffffff;
+    background-color: #000000;
+    color: #FF4D00;
   }
 
-  /* Accessible, restrained focus ring */
+  /* Accessible brutalist focus outline */
   :focus-visible {
-    outline: 2px solid #0284c7;
+    outline: 2px solid #000000;
     outline-offset: 2px;
   }
 }
 
 /* Precision scrollbars */
 ::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: #000000;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.25);
-  border-radius: 4px;
+  background: #FF4D00;
+  border-radius: 0px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(148, 163, 184, 0.45);
+  background: #e04400;
 }
 
 /* Tabular figures for amounts and metrics */
 .num-tabular {
   font-variant-numeric: tabular-nums;
+}
+
+/* Continuous linear marquee animations */
+@keyframes marquee-linear {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes marquee-linear-reverse {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0%); }
+}
+
+.animate-marquee-continuous {
+  display: flex;
+  width: 200%;
+  animation: marquee-linear 20s linear infinite;
+}
+
+.animate-marquee-reverse-continuous {
+  display: flex;
+  width: 200%;
+  animation: marquee-linear-reverse 20s linear infinite;
+}
+
+.animate-marquee-continuous:hover,
+.animate-marquee-reverse-continuous:hover {
+  animation-play-state: paused;
 }

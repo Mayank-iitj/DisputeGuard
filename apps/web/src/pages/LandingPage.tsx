@@ -1,400 +1,424 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  ShieldCheck,
+  ArrowDown,
+  ArrowUpRight,
+  Shield,
   Languages,
   Camera,
   Scale,
-  ArrowRight,
-  ExternalLink,
   Lock,
-  Cpu,
-  Layers,
-  CheckCircle2,
-  Clock,
-  AlertTriangle,
-  ChevronDown,
-  User,
-  Store,
   Terminal,
-  FileText,
-  DollarSign,
-  ShieldAlert,
+  ExternalLink,
+  CheckCircle,
+  AlertOctagon,
 } from 'lucide-react';
 
-export const LandingPage: React.FC = () => {
-  const [activePreviewTab, setActivePreviewTab] = useState<'translation' | 'evidence' | 'proposal' | 'firewall'>('translation');
-  const [expandedFaq, setExpandedFaq] = useState<number | null>(0);
+const RotatingScrollIndicator: React.FC = () => {
+  return (
+    <div className="relative w-36 h-36 flex items-center justify-center shrink-0">
+      <svg
+        className="w-full h-full animate-spin-12s select-none pointer-events-none"
+        viewBox="0 0 144 144"
+      >
+        <path
+          id="circlePath"
+          d="M 72,72 m -52,0 a 52,52 0 1,1 104,0 a 52,52 0 1,1 -104,0"
+          fill="none"
+        />
+        <text
+          fill="#000000"
+          className="font-mono text-[9px] font-bold tracking-[0.22em] uppercase"
+        >
+          <textPath href="#circlePath" startOffset="0%">
+            SCROLL DOWN • SCROLL DOWN • SCROLL DOWN •&nbsp;
+          </textPath>
+        </text>
+      </svg>
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+        <ArrowDown className="w-5 h-5 text-[#000000]" strokeWidth={2.5} />
+      </div>
+    </div>
+  );
+};
 
-  const toggleFaq = (index: number) => {
-    setExpandedFaq(expandedFaq === index ? null : index);
-  };
+export const LandingPage: React.FC = () => {
+  const [activeTab, setActiveTab] = useState<'bilingual' | 'vision' | 'policy' | 'firewall'>('bilingual');
+
+  const capabilities = [
+    {
+      index: '01 //',
+      title: 'SYNCHRONIZED BILINGUAL CHAT & TATEMAE DETECTION',
+      tags: ['NEXCONN SDK', 'LIVE JA ↔ ES', 'CULTURAL SENTIMENT', '<5MS BUS'],
+      description:
+        'Aiko writes in formal Japanese; Marco instantly reads in Spanish. Cultural politeness masking is flagged when formal phrasing conceals elevated frustration before escalation.',
+      link: '/stage',
+      linkText: 'SEE TRANSLATION IN STAGE',
+    },
+    {
+      index: '02 //',
+      title: 'PROOF-FIRST 3-ANGLE VISION DAMAGE ASSESSMENT',
+      tags: ['GUIDED CAPTURE', 'PERCEPTUAL HASH', 'SEVERITY 1-3', 'ADVISORY LABEL'],
+      description:
+        'Claiming damage triggers a guided 3-angle capture stepper. AI vision analyzes cracks and packaging, returning severity with an explicit "AI-assessed, not verified" disclosure.',
+      link: '/stage',
+      linkText: 'VIEW EVIDENCE MODAL',
+    },
+    {
+      index: '03 //',
+      title: 'DETERMINISTIC BOUNDED POLICY ENGINE V1',
+      tags: ['CODE ENFORCED', '50%-150% BOUNDS', '$50 CEILING', 'ZERO INJECTION'],
+      description:
+        'Code computes, AI only proposes. Policy Engine (v1) outputs bounded options with a hard $50.00 auto-approve ceiling. Counters are strictly bound to 50%–150% of baseline.',
+      link: '/stage',
+      linkText: 'INSPECT POLICY OPTIONS',
+    },
+    {
+      index: '04 //',
+      title: 'CROSS-CULTURAL ESCALATION FIREWALL FREEZE',
+      tags: ['THREAT LEXICON', 'ATOMIC FREEZE', 'NEUTRAL NOTICE', 'AUDIT READY'],
+      description:
+        'Active threat scanner monitors chargeback, police, and legal keywords across languages. Instantly freezes escrow and summons human dispatch without leaking risk details.',
+      link: '/stage',
+      linkText: 'TEST ESCROW FREEZE',
+    },
+    {
+      index: '05 //',
+      title: 'MISSION-CONTROL ARBITRATOR DISPATCH CONSOLE',
+      tags: ['PRIORITY FORMULA', 'AI CASE BRIEF', 'GROUNDED COPILOT', 'ONE-CLICK'],
+      description:
+        'Pro console with formula-driven priority ranking, confidential threat quotes, grounded bilingual copilot drafting with regex amount checks, and one-click escrow release.',
+      link: '/dispatch',
+      linkText: 'OPEN DISPATCH CONSOLE',
+    },
+  ];
 
   return (
-    <div className="min-h-screen bg-[#080C14] text-slate-100 font-sans flex flex-col antialiased selection:bg-slate-700 selection:text-white">
-      {/* Precision Top Navigation */}
-      <header className="h-14 border-b border-slate-800/80 px-6 flex items-center justify-between max-w-7xl mx-auto w-full shrink-0">
-        <div className="flex items-center gap-3">
-          <div className="w-7 h-7 rounded bg-slate-800 border border-slate-700 flex items-center justify-center font-bold text-xs text-white tracking-wider">
-            DG
-          </div>
-          <div className="flex items-baseline gap-2">
-            <span className="font-semibold text-sm tracking-tight text-white">
-              DisputeGuard
-            </span>
-            <span className="text-[11px] text-slate-500 font-mono hidden sm:inline">
-              Built on Nexconn Chat SDK
-            </span>
-          </div>
+    <div className="min-h-screen bg-[#FF4D00] text-[#000000] font-sans antialiased selection:bg-[#000000] selection:text-[#FF4D00]">
+      {/* Floating Navigation Pill */}
+      <header className="fixed top-5 inset-x-0 z-50 px-4 sm:px-8 pointer-events-none flex items-center justify-between max-w-7xl mx-auto w-full">
+        {/* Left Logo */}
+        <div className="pointer-events-auto bg-[#000000] text-white px-4 py-2 rounded-full border-2 border-[#000000] shadow-xl flex items-center gap-2">
+          <div className="w-2.5 h-2.5 rounded-full bg-[#FF4D00]" />
+          <span className="font-display uppercase text-xs tracking-tight">DISPUTEGUARD</span>
+          <span className="font-mono text-[10px] text-white/60 hidden sm:inline">// DG-01</span>
         </div>
 
-        <nav className="flex items-center gap-6 text-xs font-medium">
+        {/* Center Floating Pill Navigation */}
+        <nav className="pointer-events-auto bg-[#000000] text-white rounded-full px-2 py-1.5 shadow-2xl border-2 border-[#000000] flex items-center gap-1 sm:gap-2">
+          <Link
+            to="/stage"
+            className="font-mono text-[11px] sm:text-[12px] uppercase tracking-tight text-white px-3 py-1.5 rounded-full hover:bg-[#FFFFFF] hover:text-[#000000] transition-colors duration-150 font-bold"
+          >
+            JUDGE STAGE
+          </Link>
           <Link
             to="/buyer"
-            className="text-slate-400 hover:text-slate-200 transition hidden md:inline-block"
+            className="font-mono text-[11px] sm:text-[12px] uppercase tracking-tight text-white/80 px-3 py-1.5 rounded-full hover:bg-[#FFFFFF] hover:text-[#000000] transition-colors duration-150 hidden md:inline-block"
           >
-            Buyer (Aiko)
+            BUYER (JA)
           </Link>
           <Link
             to="/seller"
-            className="text-slate-400 hover:text-slate-200 transition hidden md:inline-block"
+            className="font-mono text-[11px] sm:text-[12px] uppercase tracking-tight text-white/80 px-3 py-1.5 rounded-full hover:bg-[#FFFFFF] hover:text-[#000000] transition-colors duration-150 hidden md:inline-block"
           >
-            Seller (Marco)
+            SELLER (ES)
           </Link>
           <Link
             to="/dispatch"
-            className="text-slate-400 hover:text-slate-200 transition hidden sm:inline-block"
+            className="font-mono text-[11px] sm:text-[12px] uppercase tracking-tight text-white/80 px-3 py-1.5 rounded-full hover:bg-[#FFFFFF] hover:text-[#000000] transition-colors duration-150"
           >
-            Dispatch (Priya)
-          </Link>
-          <Link
-            to="/stage"
-            className="px-3.5 py-1.5 rounded bg-white hover:bg-slate-200 text-slate-950 font-semibold text-xs transition active:scale-98 flex items-center gap-1.5 shadow-xs"
-          >
-            <span>Live 3-Pane Stage</span>
-            <ArrowRight className="w-3.5 h-3.5" />
+            DISPATCH
           </Link>
         </nav>
+
+        {/* Right Status Indicator */}
+        <div className="pointer-events-auto bg-[#000000] text-white px-3 sm:px-4 py-2 rounded-full border-2 border-[#000000] shadow-xl flex items-center gap-2 text-xs font-mono">
+          <span className="w-2 h-2 rounded-full bg-emerald-400" />
+          <span className="hidden sm:inline font-bold">NEXCONN LIVE</span>
+          <span className="sm:hidden font-bold">LIVE</span>
+        </div>
       </header>
 
-      {/* Hero Section */}
-      <main className="flex-1 max-w-6xl mx-auto px-6 pt-20 pb-20 w-full flex flex-col items-center">
-        <div className="text-center max-w-3xl">
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight text-white leading-[1.12]">
-            Cross-border disputes, resolved inside the chat where they start.
+      {/* Typographic Hero Section */}
+      <section className="pt-28 sm:pt-36 pb-8 sm:pb-12 px-4 sm:px-8 flex flex-col items-center justify-between min-h-[92vh] border-b-2 border-[#000000]">
+        <div className="w-full flex-1 flex flex-col justify-center items-center text-center max-w-7xl mx-auto my-auto">
+          <h1 className="font-display uppercase text-[15.5vw] leading-[0.84] tracking-[-0.04em] text-[#000000] select-none block w-full">
+            DISPUTE
           </h1>
+          <h1 className="font-display uppercase text-[15.5vw] leading-[0.84] tracking-[-0.04em] text-[#000000] select-none block w-full -mt-2 sm:-mt-6">
+            GUARD
+          </h1>
+        </div>
 
-          <p className="mt-6 text-base sm:text-lg text-slate-400 leading-relaxed font-normal">
-            When an international shipment arrives damaged, language barriers turn simple claims into
-            costly chargebacks. DisputeGuard binds the order, escrow, live translation, and vision evidence
-            into a single synchronized Nexconn channel.
-          </p>
+        {/* Horizontal Divider & Metadata Row */}
+        <div className="w-full max-w-7xl mx-auto border-t-2 border-[#000000] pt-6 pb-2 grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+          {/* Metadata Left */}
+          <div className="text-left font-mono text-xs sm:text-[13px] tracking-tight leading-relaxed text-[#000000]">
+            <span className="block font-bold">[PROTOCOL SPEC]</span>
+            <span className="block font-bold">BUILT FOR NEXCONN CHAT SDK</span>
+            <span className="text-[#000000]/80 block">CROSS-BORDER MULTILINGUAL ESCROW</span>
+            <span className="text-[#000000]/80 block">TOKYO ↔ VALENCIA ↔ DISPATCH</span>
+          </div>
 
-          {/* Action Controls */}
-          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
-            <Link
-              to="/stage"
-              className="w-full sm:w-auto px-6 py-2.5 rounded bg-white hover:bg-slate-200 text-slate-950 font-semibold text-xs transition active:scale-98 flex items-center justify-center gap-2 shadow-xs"
-            >
-              <span>Launch 3-Pane Judge Sandbox (/stage)</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
-            <Link
-              to="/dispatch"
-              className="w-full sm:w-auto px-5 py-2.5 rounded bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 font-medium text-xs transition flex items-center justify-center gap-2"
-            >
-              <span>Open Staff Dispatch Console</span>
-            </Link>
+          {/* Rotating Circular Indicator Center */}
+          <div className="flex justify-center order-first md:order-none">
+            <RotatingScrollIndicator />
+          </div>
+
+          {/* Metadata Right & Action Buttons */}
+          <div className="text-left md:text-right font-mono text-xs sm:text-[13px] tracking-tight leading-relaxed text-[#000000] flex flex-col items-start md:items-end">
+            <span className="block font-bold">[CORE INVARIANT]</span>
+            <span className="block font-bold">AI PROPOSES • CODE COMPUTES</span>
+            <span className="text-[#000000]/80 block">HUMAN ARBITRATOR APPROVES ABOVE $50</span>
+            <div className="mt-3 flex items-center gap-2">
+              <Link
+                to="/stage"
+                className="bg-[#000000] text-white hover:bg-white hover:text-[#000000] font-mono text-xs uppercase px-4 py-2 rounded-full border-2 border-[#000000] transition-colors duration-150 font-bold flex items-center gap-1.5"
+              >
+                <span>OPEN 3-PANE STAGE</span>
+                <ArrowUpRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Skewed Marquee Section */}
+      <section className="bg-[#000000] -skew-y-2 py-8 sm:py-12 border-t-2 border-b-2 border-[#000000] overflow-hidden select-none my-12 sm:my-16">
+        {/* Row 1: Orange Archivo Black */}
+        <div className="overflow-hidden whitespace-nowrap flex">
+          <div className="animate-marquee-continuous font-display uppercase text-[10vw] sm:text-[8vw] leading-none text-[#FF4D00] tracking-[-0.04em] shrink-0">
+            AUTOMATED ESCROW FREEZE • REALTIME BILINGUAL TRANSLATION • $50 AUTO-SETTLE CEILING • GUIDED VISION PROOF •&nbsp;
+          </div>
+          <div className="animate-marquee-continuous font-display uppercase text-[10vw] sm:text-[8vw] leading-none text-[#FF4D00] tracking-[-0.04em] shrink-0">
+            AUTOMATED ESCROW FREEZE • REALTIME BILINGUAL TRANSLATION • $50 AUTO-SETTLE CEILING • GUIDED VISION PROOF •&nbsp;
           </div>
         </div>
 
-        {/* Real Economic Impact Metrics (Tabular & Grounded) */}
-        <section className="mt-16 w-full grid grid-cols-2 lg:grid-cols-4 gap-4 p-4 rounded border border-slate-800/80 bg-slate-900/40 text-left">
-          <div className="p-3">
-            <span className="text-[11px] font-mono text-slate-500 uppercase tracking-wider block">
-              Resolution Time
-            </span>
-            <div className="flex items-baseline gap-2 mt-1">
-              <span className="text-2xl font-mono font-bold text-white num-tabular">&lt; 8 min</span>
-              <span className="text-[10px] text-slate-500 font-mono">vs 6.4 days email</span>
-            </div>
+        {/* Row 2: White 80% reverse */}
+        <div className="overflow-hidden whitespace-nowrap flex mt-2 sm:mt-4">
+          <div className="animate-marquee-reverse-continuous font-display uppercase text-[10vw] sm:text-[8vw] leading-none text-white/80 tracking-[-0.04em] shrink-0">
+            NEXCONN MULTI-PARTY CHAT • IMMUTABLE AUDIT LEDGER • POLICIES BOUNDED 50-150% • ZERO INJECTION RISK •&nbsp;
           </div>
-          <div className="p-3 border-l border-slate-800/80">
-            <span className="text-[11px] font-mono text-slate-500 uppercase tracking-wider block">
-              Auto-Settle Ceiling
-            </span>
-            <div className="flex items-baseline gap-2 mt-1">
-              <span className="text-2xl font-mono font-bold text-emerald-400 num-tabular">$50.00</span>
-              <span className="text-[10px] text-slate-500 font-mono">code enforced</span>
-            </div>
+          <div className="animate-marquee-reverse-continuous font-display uppercase text-[10vw] sm:text-[8vw] leading-none text-white/80 tracking-[-0.04em] shrink-0">
+            NEXCONN MULTI-PARTY CHAT • IMMUTABLE AUDIT LEDGER • POLICIES BOUNDED 50-150% • ZERO INJECTION RISK •&nbsp;
           </div>
-          <div className="p-3 border-l border-slate-800/80">
-            <span className="text-[11px] font-mono text-slate-500 uppercase tracking-wider block">
-              Cross-Iframe Bus Latency
-            </span>
-            <div className="flex items-baseline gap-2 mt-1">
-              <span className="text-2xl font-mono font-bold text-sky-400 num-tabular">&lt; 5 ms</span>
-              <span className="text-[10px] text-slate-500 font-mono">0ms broadcast</span>
-            </div>
-          </div>
-          <div className="p-3 border-l border-slate-800/80">
-            <span className="text-[11px] font-mono text-slate-500 uppercase tracking-wider block">
-              Injection Vulnerability
-            </span>
-            <div className="flex items-baseline gap-2 mt-1">
-              <span className="text-2xl font-mono font-bold text-slate-200 num-tabular">0.0%</span>
-              <span className="text-[10px] text-slate-500 font-mono">math in code</span>
-            </div>
-          </div>
-        </section>
+        </div>
+      </section>
 
-        {/* Interactive Live Scenario Simulator */}
-        <section className="mt-20 w-full text-left">
-          <div className="border-b border-slate-800/80 pb-3 mb-6 flex flex-col sm:flex-row sm:items-baseline justify-between gap-2">
+      {/* Relatable Operational Problem & Live Inspector */}
+      <section className="bg-[#000000] text-white py-16 px-4 sm:px-8 border-b-2 border-[#000000]">
+        <div className="max-w-7xl mx-auto">
+          {/* Section Header */}
+          <div className="border-b-2 border-white/20 pb-6 mb-12 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
             <div>
-              <h2 className="text-sm font-semibold text-white tracking-tight">
-                Interactive Resolution Walkthrough
+              <span className="font-mono text-xs text-[#FF4D00] uppercase tracking-wider block font-bold mb-1">
+                [LIVE NEXCONN PROTOCOL INSPECTOR]
+              </span>
+              <h2 className="font-display uppercase text-3xl sm:text-5xl lg:text-6xl tracking-tight leading-[0.9]">
+                HOW DISPUTEGUARD WORKS IN REAL-TIME
               </h2>
-              <p className="text-xs text-slate-400 mt-0.5">
-                Explore how DisputeGuard operates at each step of an international marketplace dispute.
-              </p>
             </div>
-            <span className="text-[11px] text-slate-500 font-mono">
-              Live Scenario Simulation
-            </span>
+            <p className="font-mono text-xs text-white/60 max-w-md">
+              Switch inspection views to verify how live chat, damage vision, mathematical policy,
+              and escalation firewall execute without prompt injection vulnerability.
+            </p>
           </div>
 
-          {/* Step Selector Tabs */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
-            <button
-              onClick={() => setActivePreviewTab('translation')}
-              className={`p-3 rounded text-left border transition cursor-pointer ${
-                activePreviewTab === 'translation'
-                  ? 'bg-slate-900 border-slate-600 text-white'
-                  : 'bg-slate-900/30 border-slate-800 text-slate-400 hover:border-slate-700 hover:text-slate-200'
-              }`}
-            >
-              <div className="flex items-center gap-1.5 text-xs font-semibold mb-1">
-                <Languages className="w-3.5 h-3.5 text-sky-400" />
-                <span>01. Translation</span>
-              </div>
-              <p className="text-[11px] text-slate-500 leading-tight">
-                Live bilingual chat with Japanese politeness masking detection.
-              </p>
-            </button>
-
-            <button
-              onClick={() => setActivePreviewTab('evidence')}
-              className={`p-3 rounded text-left border transition cursor-pointer ${
-                activePreviewTab === 'evidence'
-                  ? 'bg-slate-900 border-slate-600 text-white'
-                  : 'bg-slate-900/30 border-slate-800 text-slate-400 hover:border-slate-700 hover:text-slate-200'
-              }`}
-            >
-              <div className="flex items-center gap-1.5 text-xs font-semibold mb-1">
-                <Camera className="w-3.5 h-3.5 text-amber-400" />
-                <span>02. Proof-First</span>
-              </div>
-              <p className="text-[11px] text-slate-500 leading-tight">
-                Guided 3-angle photo capture with AI vision damage scoring.
-              </p>
-            </button>
-
-            <button
-              onClick={() => setActivePreviewTab('proposal')}
-              className={`p-3 rounded text-left border transition cursor-pointer ${
-                activePreviewTab === 'proposal'
-                  ? 'bg-slate-900 border-slate-600 text-white'
-                  : 'bg-slate-900/30 border-slate-800 text-slate-400 hover:border-slate-700 hover:text-slate-200'
-              }`}
-            >
-              <div className="flex items-center gap-1.5 text-xs font-semibold mb-1">
-                <Scale className="w-3.5 h-3.5 text-emerald-400" />
-                <span>03. Bounded Policy</span>
-              </div>
-              <p className="text-[11px] text-slate-500 leading-tight">
-                Deterministic mathematical proposals (40% refund or replacement).
-              </p>
-            </button>
-
-            <button
-              onClick={() => setActivePreviewTab('firewall')}
-              className={`p-3 rounded text-left border transition cursor-pointer ${
-                activePreviewTab === 'firewall'
-                  ? 'bg-slate-900 border-slate-600 text-white'
-                  : 'bg-slate-900/30 border-slate-800 text-slate-400 hover:border-slate-700 hover:text-slate-200'
-              }`}
-            >
-              <div className="flex items-center gap-1.5 text-xs font-semibold mb-1">
-                <Lock className="w-3.5 h-3.5 text-rose-400" />
-                <span>04. Escalation Freeze</span>
-              </div>
-              <p className="text-[11px] text-slate-500 leading-tight">
-                Instant escrow freeze on chargeback threat & dispatch triage.
-              </p>
-            </button>
-          </div>
-
-          {/* Interactive Preview Container */}
-          <div className="p-6 rounded border border-slate-800 bg-slate-900/60 transition-all duration-200">
-            {activePreviewTab === 'translation' && (
-              <div className="space-y-4">
-                <div className="flex items-center justify-between text-xs border-b border-slate-800 pb-2">
+          {/* Interactive Protocol Tabs */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 mb-6">
+            {[
+              { id: 'bilingual', label: '01. BILINGUAL STREAM', icon: Languages },
+              { id: 'vision', label: '02. VISION PROOF', icon: Camera },
+              { id: 'policy', label: '03. POLICY ENGINE', icon: Scale },
+              { id: 'firewall', label: '04. ESCALATION FREEZE', icon: Lock },
+            ].map((tab) => {
+              const Icon = tab.icon;
+              const isSelected = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id as any)}
+                  className={`p-4 border text-left transition-all cursor-pointer font-mono text-xs uppercase flex items-center justify-between ${
+                    isSelected
+                      ? 'bg-[#FF4D00] text-[#000000] border-[#FF4D00] font-bold'
+                      : 'bg-[#000000] text-white/70 border-white/20 hover:border-white/60 hover:text-white'
+                  }`}
+                >
                   <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                    <span className="font-semibold text-white">Bilingual Nexconn Channel: #dsp_1042</span>
+                    <Icon className="w-4 h-4" />
+                    <span>{tab.label}</span>
                   </div>
-                  <span className="font-mono text-[11px] text-slate-500">Order: ord_1042 · Ceramic Set</span>
+                  {isSelected && <span className="font-bold">●</span>}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Interactive Display Area */}
+          <div className="border-2 border-white/20 bg-[#080808] p-6 sm:p-8">
+            {activeTab === 'bilingual' && (
+              <div className="space-y-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-white/20 pb-4 gap-2">
+                  <div className="flex items-center gap-2 font-mono text-xs">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                    <span className="text-white font-bold">NEXCONN MULTI-PARTY CHANNEL #dsp_1042</span>
+                  </div>
+                  <span className="font-mono text-xs text-[#FF4D00]">ORDER: ord_1042 · $84.00 USD</span>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {/* Buyer View (ja) */}
-                  <div className="p-4 rounded border border-slate-800 bg-slate-950/70 space-y-2">
-                    <div className="flex items-center justify-between text-[11px] text-slate-400 font-mono">
-                      <span>Buyer View (Aiko Tanaka / Tokyo)</span>
-                      <span>ja</span>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Buyer View */}
+                  <div className="border border-white/20 p-5 space-y-3 bg-[#000000]">
+                    <div className="flex justify-between font-mono text-[11px] text-[#FF4D00] uppercase font-bold">
+                      <span>BUYER VIEW (AIKO TANAKA // TOKYO)</span>
+                      <span>JA</span>
                     </div>
-                    <div className="p-3 rounded bg-slate-900 text-slate-200 text-xs leading-relaxed border border-slate-800">
-                      コップのふちが割れて届きました。箱の底に小さな破片が散らばっていました。
+                    <div className="p-4 bg-white/5 border border-white/10 font-mono text-xs leading-relaxed text-white">
+                      コップのふちが割れて届きました。箱の中に小さな破片が散らばっていました。
                     </div>
-                    <div className="p-2 rounded bg-amber-950/40 border border-amber-900/50 text-amber-300 text-[11px] font-mono">
-                      Tatemae Tone Note: Formal phrasing detected; underlying sentiment indicates immediate resolution expected.
+                    <div className="p-3 border border-[#FF4D00]/40 bg-[#FF4D00]/10 text-[#FF4D00] font-mono text-xs space-y-1">
+                      <span className="font-bold block">[TATEMAE TONE NOTE DETECTED]</span>
+                      <p className="text-white/80 text-[11px]">
+                        Formal honorific phrasing masks elevated frustration. Tone note surfaced to arbitrator.
+                      </p>
                     </div>
                   </div>
 
-                  {/* Seller View (es) */}
-                  <div className="p-4 rounded border border-slate-800 bg-slate-950/70 space-y-2">
-                    <div className="flex items-center justify-between text-[11px] text-slate-400 font-mono">
-                      <span>Seller View (Marco Rossi / Valencia)</span>
-                      <span>es</span>
+                  {/* Seller View */}
+                  <div className="border border-white/20 p-5 space-y-3 bg-[#000000]">
+                    <div className="flex justify-between font-mono text-[11px] text-white/60 uppercase font-bold">
+                      <span>SELLER VIEW (MARCO ROSSI // VALENCIA)</span>
+                      <span>ES</span>
                     </div>
-                    <div className="p-3 rounded bg-slate-900 text-slate-200 text-xs leading-relaxed border border-slate-800">
+                    <div className="p-4 bg-white/5 border border-white/10 font-mono text-xs leading-relaxed text-white">
                       El borde de la taza llegó roto. Había pequeños fragmentos esparcidos en el fondo de la caja.
                     </div>
-                    <div className="text-[11px] text-slate-500 font-mono flex items-center justify-between pt-1">
-                      <span>Live translation via Nexconn</span>
-                      <span className="text-slate-400 underline cursor-pointer">inspect original</span>
+                    <div className="flex justify-between font-mono text-[11px] text-white/50 pt-2 border-t border-white/10">
+                      <span>TRANSLATED VIA NEXCONN REALTIME BUS</span>
+                      <span className="text-[#FF4D00] font-bold underline cursor-pointer">ONE-TAP ORIGINAL</span>
                     </div>
                   </div>
                 </div>
               </div>
             )}
 
-            {activePreviewTab === 'evidence' && (
-              <div className="space-y-4">
-                <div className="flex items-center justify-between text-xs border-b border-slate-800 pb-2">
-                  <div className="flex items-center gap-2">
-                    <span className="font-semibold text-white">AI Vision Damage Assessment</span>
-                  </div>
-                  <span className="font-mono text-[11px] text-slate-500">Confidence: 94% · Hash Verified</span>
+            {activeTab === 'vision' && (
+              <div className="space-y-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-white/20 pb-4 gap-2">
+                  <span className="font-mono text-xs font-bold text-white uppercase">
+                    AI VISION EVIDENCE VERIFICATION // PERCEPTUAL HASH
+                  </span>
+                  <span className="font-mono text-xs text-white/60">CONFIDENCE: 94% · 3/3 ANGLES VERIFIED</span>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                  <div className="p-3 rounded border border-slate-800 bg-slate-950/70 text-xs space-y-2">
-                    <div className="aspect-video rounded bg-slate-800 border border-slate-700 flex items-center justify-center text-[11px] font-mono text-slate-400">
-                      Angle 01: Product Rim Crack
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono text-xs">
+                  <div className="border border-white/20 p-4 space-y-2 bg-[#000000]">
+                    <div className="aspect-video bg-white/5 border border-white/10 flex items-center justify-center text-white/40 text-[11px]">
+                      [PHOTO: RIM CRACK MACRO]
                     </div>
-                    <span className="font-mono text-[11px] text-slate-400 block">Shot 01 · Macro Inspection</span>
+                    <span className="text-[#FF4D00] font-bold block">ANGLE 01: MACRO RIM</span>
+                    <span className="text-white/60 text-[11px] block">Clear structural fracture visible</span>
                   </div>
-                  <div className="p-3 rounded border border-slate-800 bg-slate-950/70 text-xs space-y-2">
-                    <div className="aspect-video rounded bg-slate-800 border border-slate-700 flex items-center justify-center text-[11px] font-mono text-slate-400">
-                      Angle 02: Interior Wall
+                  <div className="border border-white/20 p-4 space-y-2 bg-[#000000]">
+                    <div className="aspect-video bg-white/5 border border-white/10 flex items-center justify-center text-white/40 text-[11px]">
+                      [PHOTO: INTERIOR CUP WALL]
                     </div>
-                    <span className="font-mono text-[11px] text-slate-400 block">Shot 02 · Functional Test</span>
+                    <span className="text-[#FF4D00] font-bold block">ANGLE 02: INTERIOR</span>
+                    <span className="text-white/60 text-[11px] block">No secondary spider fractures</span>
                   </div>
-                  <div className="p-3 rounded border border-slate-800 bg-slate-950/70 text-xs space-y-2">
-                    <div className="aspect-video rounded bg-slate-800 border border-slate-700 flex items-center justify-center text-[11px] font-mono text-slate-400">
-                      Angle 03: Shipping Carton
+                  <div className="border border-white/20 p-4 space-y-2 bg-[#000000]">
+                    <div className="aspect-video bg-white/5 border border-white/10 flex items-center justify-center text-white/40 text-[11px]">
+                      [PHOTO: SHIPPING PACKAGING]
                     </div>
-                    <span className="font-mono text-[11px] text-slate-400 block">Shot 03 · Carrier Impact</span>
+                    <span className="text-[#FF4D00] font-bold block">ANGLE 03: TRANSIT BOX</span>
+                    <span className="text-white/60 text-[11px] block">Exterior crush corner detected</span>
                   </div>
                 </div>
 
-                <div className="p-3 rounded border border-slate-800 bg-slate-950/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                <div className="border-2 border-[#FF4D00] p-4 bg-[#FF4D00]/5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 font-mono text-xs">
                   <div>
-                    <span className="font-semibold text-white block">Assessment Result: Severity 2 / 3 (Partial Functional Impact)</span>
-                    <span className="text-[11px] text-slate-400">Policy Recommendation: Keep item + 40% partial refund ($33.60 USD)</span>
+                    <span className="text-[#FF4D00] font-bold block">ASSESSMENT: SEVERITY LEVEL 2 / 3 (PARTIAL FUNCTIONAL IMPACT)</span>
+                    <span className="text-white/80 text-[11px]">POLICY ENGINE RECOMMENDATION: 40% PARTIAL REFUND ($33.60 USD)</span>
                   </div>
-                  <span className="px-2 py-0.5 rounded font-mono text-[10px] bg-slate-800 text-slate-300 border border-slate-700 self-start sm:self-auto">
-                    AI-assessed, not verified
+                  <span className="bg-[#000000] border border-white/40 px-3 py-1 text-white text-[10px] uppercase font-bold">
+                    AI-ASSESSED, NOT VERIFIED
                   </span>
                 </div>
               </div>
             )}
 
-            {activePreviewTab === 'proposal' && (
-              <div className="space-y-4">
-                <div className="flex items-center justify-between text-xs border-b border-slate-800 pb-2">
-                  <div className="flex items-center gap-2">
-                    <span className="font-semibold text-white">Deterministic Policy Proposals (v1)</span>
-                  </div>
-                  <span className="font-mono text-[11px] text-emerald-400">Under $50.00 Auto-Settle Ceiling</span>
+            {activeTab === 'policy' && (
+              <div className="space-y-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-white/20 pb-4 gap-2">
+                  <span className="font-mono text-xs font-bold text-white uppercase">
+                    POLICY ENGINE V1 // DETERMINISTIC REASONING
+                  </span>
+                  <span className="font-mono text-xs text-emerald-400 font-bold">MUTUAL ACCEPTANCE &lt; $50 CEILING</span>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="p-4 rounded border border-emerald-900/60 bg-emerald-950/20 space-y-2">
-                    <div className="flex items-center justify-between text-xs font-semibold text-emerald-300">
-                      <span>Option A: 40% Partial Refund</span>
-                      <span className="font-mono text-sm">$33.60 USD</span>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 font-mono text-xs">
+                  <div className="border-2 border-emerald-500 p-5 bg-emerald-950/20 space-y-3">
+                    <div className="flex justify-between items-center text-emerald-400 font-bold">
+                      <span className="text-sm">OPTION A: 40% REFUND</span>
+                      <span className="text-base num-tabular">$33.60 USD</span>
                     </div>
-                    <p className="text-xs text-slate-400 leading-relaxed">
-                      Buyer keeps the ceramic set for decorative use; seller issues an immediate $33.60 credit.
-                      Since $33.60 &lt; $50.00 ceiling, mutual acceptance settles the escrow atomically.
+                    <p className="text-white/80 leading-relaxed text-[11px]">
+                      Buyer keeps the ceramic set; seller releases $33.60 credit.
+                      Since $33.60 is below the $50 auto-approve ceiling, mutual acceptance settles escrow atomically in SQLite.
                     </p>
-                    <span className="inline-block text-[10px] font-mono text-emerald-400 bg-emerald-950/80 border border-emerald-800 px-2 py-0.5 rounded">
-                      Status: Mutually Accepted ✓
+                    <span className="inline-block bg-emerald-500 text-black px-2.5 py-0.5 font-bold uppercase text-[10px]">
+                      STATUS: MUTUALLY ACCEPTED ✓
                     </span>
                   </div>
 
-                  <div className="p-4 rounded border border-slate-800 bg-slate-950/70 space-y-2">
-                    <div className="flex items-center justify-between text-xs font-semibold text-slate-300">
-                      <span>Option B: Free Replacement</span>
-                      <span className="font-mono text-sm">$0.00</span>
+                  <div className="border border-white/20 p-5 bg-[#000000] space-y-3">
+                    <div className="flex justify-between items-center text-white font-bold">
+                      <span className="text-sm">OPTION B: REPLACEMENT</span>
+                      <span className="text-base num-tabular">$0.00 USD</span>
                     </div>
-                    <p className="text-xs text-slate-400 leading-relaxed">
-                      Seller ships a replacement unit with expedited tracking; original escrow funds remain
-                      secured until confirmed delivery of replacement parcel.
+                    <p className="text-white/60 leading-relaxed text-[11px]">
+                      Seller dispatches a replacement unit with expedited tracking. Original escrow funds remain locked
+                      until delivery is confirmed by buyer signature.
                     </p>
-                    <span className="inline-block text-[10px] font-mono text-slate-500 bg-slate-900 border border-slate-800 px-2 py-0.5 rounded">
-                      Alternative Option
+                    <span className="inline-block bg-white/10 text-white/60 px-2.5 py-0.5 uppercase text-[10px]">
+                      ALTERNATIVE OPTION
                     </span>
                   </div>
                 </div>
               </div>
             )}
 
-            {activePreviewTab === 'firewall' && (
-              <div className="space-y-4">
-                <div className="flex items-center justify-between text-xs border-b border-slate-800 pb-2">
-                  <div className="flex items-center gap-2">
-                    <ShieldAlert className="w-4 h-4 text-rose-500" />
-                    <span className="font-semibold text-white">Escalation Firewall Threat Intercept</span>
+            {activeTab === 'firewall' && (
+              <div className="space-y-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-white/20 pb-4 gap-2">
+                  <div className="flex items-center gap-2 font-mono text-xs text-[#FF4D00] font-bold">
+                    <AlertOctagon className="w-4 h-4" />
+                    <span>ESCALATION FIREWALL // THREAT INTERCEPT</span>
                   </div>
-                  <span className="font-mono text-[11px] text-rose-400">Escrow Frozen Instantly</span>
+                  <span className="font-mono text-xs text-rose-400 font-bold">ESCROW STATE: FROZEN</span>
                 </div>
 
-                <div className="p-4 rounded border border-rose-900/60 bg-rose-950/20 space-y-3">
-                  <div className="text-xs text-slate-300 leading-relaxed">
-                    <strong className="text-rose-400 font-semibold block mb-1">Detected Trigger Phrase (Japanese):</strong>
-                    <span className="font-mono text-[11px] bg-slate-900 p-2 rounded block border border-slate-800 text-slate-200">
-                      "解決されない場合は、カード会社にチャージバックを申請します" (Chargeback Threat)
-                    </span>
+                <div className="border-2 border-rose-500 p-5 bg-rose-950/20 space-y-4 font-mono text-xs">
+                  <div>
+                    <span className="text-rose-400 font-bold block mb-1 uppercase">[DETECTED THREAT PATTERN]</span>
+                    <div className="bg-[#000000] p-3 border border-rose-500/50 text-white">
+                      "解決されない場合は、カード会社にチャージバックを申請します" (Chargeback Threat Keyword Detected)
+                    </div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1 text-xs">
-                    <div className="p-2.5 rounded bg-slate-900 border border-slate-800 space-y-1">
-                      <span className="font-semibold text-white block text-[11px]">User Channel Notice:</span>
-                      <p className="text-slate-400 text-[11px] leading-relaxed">
-                        Neutral bilingual card posted: "Case escalated to DisputeGuard Dispatch for staff review."
-                        Risk threat details are never leaked to participants.
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-[11px]">
+                    <div className="p-3 bg-[#000000] border border-white/20 space-y-1">
+                      <span className="text-white font-bold block">PARTICIPANT CHANNEL NOTICE:</span>
+                      <p className="text-white/70 leading-relaxed">
+                        Neutral bilingual card posted. Escrow locked. Risk score and threat triggers are strictly hidden from users.
                       </p>
                     </div>
-
-                    <div className="p-2.5 rounded bg-slate-900 border border-slate-800 space-y-1">
-                      <span className="font-semibold text-white block text-[11px]">Dispatch Center Action:</span>
-                      <p className="text-slate-400 text-[11px] leading-relaxed">
-                        Surfaces immediately to Priority #1 (Score: 98.8). Arbitrator Priya receives confidential
-                        brief with grounded copilot draft to de-escalate.
+                    <div className="p-3 bg-[#000000] border border-white/20 space-y-1">
+                      <span className="text-[#FF4D00] font-bold block">DISPATCH ACTION TRIGGERED:</span>
+                      <p className="text-white/70 leading-relaxed">
+                        Flashes to Top of Priority Queue (Score: 98.8). Arbitrator Priya receives case brief & copilot de-escalation draft.
                       </p>
                     </div>
                   </div>
@@ -402,313 +426,148 @@ export const LandingPage: React.FC = () => {
               </div>
             )}
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* Concrete Comparison: Traditional Support vs DisputeGuard */}
-        <section className="mt-20 w-full text-left">
-          <div className="border-b border-slate-800/80 pb-3 mb-6">
-            <h2 className="text-sm font-semibold text-white tracking-tight">
-              The Reality of Cross-Border Disputes
-            </h2>
-            <p className="text-xs text-slate-400 mt-0.5">
-              Why international sellers lose $25 per dispute in processing fees and customer churn.
-            </p>
+      {/* Vertical Service List (Brutalist Service Cards) */}
+      <section className="bg-[#000000] text-white py-20 px-4 sm:px-8 border-b-2 border-[#000000]">
+        <div className="max-w-7xl mx-auto">
+          {/* Header */}
+          <div className="border-b-2 border-white/20 pb-6 mb-8 flex justify-between items-end">
+            <div>
+              <span className="font-mono text-xs text-[#FF4D00] uppercase tracking-wider block font-bold mb-1">
+                [SYSTEM CAPABILITIES]
+              </span>
+              <h2 className="font-display uppercase text-3xl sm:text-5xl lg:text-7xl tracking-tight leading-[0.9]">
+                CORE PROTOCOL MODULES
+              </h2>
+            </div>
+            <span className="font-mono text-xs text-white/50 hidden sm:inline">
+              V1.0 SPECIFICATION
+            </span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* The Old Way */}
-            <div className="p-5 rounded border border-slate-800/90 bg-slate-900/30 space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-rose-400 uppercase tracking-wide font-mono">
-                  Traditional Support (The Old Way)
-                </span>
-                <span className="text-[11px] text-slate-500 font-mono">5 to 8 days</span>
-              </div>
-              <ul className="text-xs text-slate-400 space-y-3 leading-relaxed">
-                <li className="flex items-start gap-2">
-                  <span className="text-rose-500 font-bold mt-0.5">×</span>
-                  <span><strong>Unstructured email threads:</strong> The buyer sends emails in Japanese; the seller copies text into Google Translate and loses cultural context.</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-rose-500 font-bold mt-0.5">×</span>
-                  <span><strong>Unguided blurry photos:</strong> Buyers upload unclear photos from the wrong angle, triggering repeated back-and-forth email requests.</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-rose-500 font-bold mt-0.5">×</span>
-                  <span><strong>Disputed chargeback fees:</strong> Frustrated by delays, the buyer calls their credit card company. The merchant is hit with a $15–$25 chargeback fee.</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-rose-500 font-bold mt-0.5">×</span>
-                  <span><strong>Support burnout:</strong> Agents spend hours piecing together multi-language message logs with no clear summary or policy guidance.</span>
-                </li>
-              </ul>
-            </div>
-
-            {/* The DisputeGuard Way */}
-            <div className="p-5 rounded border border-slate-700 bg-slate-900/70 space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-emerald-400 uppercase tracking-wide font-mono">
-                  DisputeGuard on Nexconn
-                </span>
-                <span className="text-[11px] text-emerald-400 font-mono">&lt; 8 minutes</span>
-              </div>
-              <ul className="text-xs text-slate-300 space-y-3 leading-relaxed">
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
-                  <span><strong>Realtime multi-party channel:</strong> Buyer, seller, and bot meet inside a single shared Nexconn channel with automatic live translation.</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
-                  <span><strong>Proof-first 3-angle guidance:</strong> The interface guides the buyer through specific required angles before claims are evaluated.</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
-                  <span><strong>Deterministic math & auto-settle:</strong> Bounded policy options compute exact refund amounts. Auto-approves under $50 without agent intervention.</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
-                  <span><strong>Escalation firewall freeze:</strong> Threat keywords trigger instant escrow protection and handoff to dispatch with an AI brief.</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </section>
-
-        {/* Test the 3 Real-World Roles */}
-        <section className="mt-20 w-full text-left">
-          <div className="border-b border-slate-800/80 pb-3 mb-6">
-            <h2 className="text-sm font-semibold text-white tracking-tight">
-              Test Real Participant Personas
-            </h2>
-            <p className="text-xs text-slate-400 mt-0.5">
-              DisputeGuard provides specialized, purpose-built interfaces for each party in a dispute.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {/* Persona 1: Buyer */}
-            <div className="p-5 rounded border border-slate-800 bg-slate-900/40 flex flex-col justify-between">
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded bg-slate-800 flex items-center justify-center text-slate-300">
-                    <User className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <span className="font-semibold text-xs text-white block">Aiko Tanaka</span>
-                    <span className="text-[10px] text-slate-500 font-mono">Buyer · Tokyo (ja)</span>
-                  </div>
-                </div>
-                <p className="text-xs text-slate-400 leading-relaxed pt-2">
-                  Inspect purchased orders, initiate damage reports, upload guided photo proof, and accept
-                  or counter settlement proposals in Japanese.
-                </p>
-              </div>
-              <Link
-                to="/buyer"
-                className="mt-5 w-full py-2 px-3 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium text-xs text-center border border-slate-700 transition"
-              >
-                Launch Buyer Portal
-              </Link>
-            </div>
-
-            {/* Persona 2: Seller */}
-            <div className="p-5 rounded border border-slate-800 bg-slate-900/40 flex flex-col justify-between">
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded bg-slate-800 flex items-center justify-center text-slate-300">
-                    <Store className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <span className="font-semibold text-xs text-white block">Marco Rossi</span>
-                    <span className="text-[10px] text-slate-500 font-mono">Seller · Valencia (es)</span>
-                  </div>
-                </div>
-                <p className="text-xs text-slate-400 leading-relaxed pt-2">
-                  Read customer inquiries translated to Spanish, review damage assessments, and approve
-                  policy refund proposals or offer replacements.
-                </p>
-              </div>
-              <Link
-                to="/seller"
-                className="mt-5 w-full py-2 px-3 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium text-xs text-center border border-slate-700 transition"
-              >
-                Launch Seller Portal
-              </Link>
-            </div>
-
-            {/* Persona 3: Arbitrator */}
-            <div className="p-5 rounded border border-slate-800 bg-slate-900/40 flex flex-col justify-between">
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded bg-slate-800 flex items-center justify-center text-slate-300">
-                    <Terminal className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <span className="font-semibold text-xs text-white block">Priya Sharma</span>
-                    <span className="text-[10px] text-sky-400 font-mono">Arbitrator · Dispatch (en)</span>
-                  </div>
-                </div>
-                <p className="text-xs text-slate-400 leading-relaxed pt-2">
-                  Manage the high-risk priority queue, inspect confidential threat quotes in the AI Brief,
-                  and execute one-click audit ledger settlements.
-                </p>
-              </div>
-              <Link
-                to="/dispatch"
-                className="mt-5 w-full py-2 px-3 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium text-xs text-center border border-slate-700 transition"
-              >
-                Launch Dispatch Center
-              </Link>
-            </div>
-          </div>
-        </section>
-
-        {/* Technical Architecture & Safety Boundary */}
-        <section className="mt-20 w-full text-left">
-          <div className="border-b border-slate-800/80 pb-3 mb-6">
-            <h2 className="text-sm font-semibold text-white tracking-tight">
-              Safety Guarantees & Non-Negotiable Invariants
-            </h2>
-            <p className="text-xs text-slate-400 mt-0.5">
-              Engineered with deterministic guards so that AI hallucinations cannot move escrow money.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="space-y-2 p-4 rounded border border-slate-800 bg-slate-900/30">
-              <div className="flex items-center gap-2 text-white font-semibold text-xs">
-                <Scale className="w-4 h-4 text-emerald-400" />
-                <span>Deterministic Math</span>
-              </div>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                The LLM never computes or suggests dollar amounts. Policy Engine (v1) executes pure
-                TypeScript calculations based on verified order value, item category, and damage severity.
-              </p>
-            </div>
-
-            <div className="space-y-2 p-4 rounded border border-slate-800 bg-slate-900/30">
-              <div className="flex items-center gap-2 text-white font-semibold text-xs">
-                <Lock className="w-4 h-4 text-sky-400" />
-                <span>$50.00 Auto-Settle Ceiling</span>
-              </div>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Any agreed settlement under $50.00 settles automatically upon mutual acceptance. Any claim
-                exceeding $50.00 requires a cryptographic signature from a verified human arbitrator.
-              </p>
-            </div>
-
-            <div className="space-y-2 p-4 rounded border border-slate-800 bg-slate-900/30">
-              <div className="flex items-center gap-2 text-white font-semibold text-xs">
-                <Layers className="w-4 h-4 text-indigo-400" />
-                <span>Append-Only Escrow Ledger</span>
-              </div>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                All escrow balance modifications write immutable ledger entries with actor IDs,
-                timestamps, and reason codes. Database constraints block out-of-order transitions.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* Interactive FAQ Section (Accordion) */}
-        <section className="mt-20 w-full text-left">
-          <div className="border-b border-slate-800/80 pb-3 mb-6">
-            <h2 className="text-sm font-semibold text-white tracking-tight">
-              Frequently Asked Technical Questions
-            </h2>
-            <p className="text-xs text-slate-400 mt-0.5">
-              Direct answers to questions regarding architecture, LLM safety, and dispute resolution.
-            </p>
-          </div>
-
-          <div className="space-y-3">
-            {[
-              {
-                q: 'Can prompt injection in customer messages move escrow funds?',
-                a: 'No. Customer messages are treated as untrusted conversational data. The LLM produces translations, summaries, and tone notes only. All monetary calculations, proposal options, counter bounds, and escrow transitions are computed deterministically in code.',
-              },
-              {
-                q: 'How does the Escalation Firewall avoid false alarms?',
-                a: 'The risk engine uses a weighted multilingual threat lexicon paired with negation checks (e.g., "I will not call the police" is recognized as non-threatening) and politeness masking detection for Japanese tatemae. When a real threat fires, escrow freezes immediately without exposing internal risk details.',
-              },
-              {
-                q: 'Why build directly on the Nexconn Chat SDK?',
-                a: 'Nexconn provides the multi-party channel infrastructure that connects buyer, seller, and arbitrator bot on a single persistent stream. Structured message cards (proposals, evidence requests, resolutions) travel over Nexconn as typed event envelopes.',
-              },
-              {
-                q: 'What are the bounds on counter-proposals?',
-                a: 'To prevent bad-faith haggling, policy v1 strictly limits counter-proposals to between 50% and 150% of the baseline proposed refund, capped at the order total, with a maximum of two negotiation rounds before escalation.',
-              },
-            ].map((faq, idx) => (
+          {/* Brutalist Cards List */}
+          <div className="divide-y divide-white/20 border-b border-white/20">
+            {capabilities.map((item) => (
               <div
-                key={idx}
-                className="border border-slate-800 rounded bg-slate-900/30 overflow-hidden"
+                key={item.index}
+                className="group py-8 sm:py-12 transition-all duration-200 hover:bg-white/[0.04] px-4 -mx-4 cursor-pointer"
               >
-                <button
-                  onClick={() => toggleFaq(idx)}
-                  className="w-full p-4 text-left flex items-center justify-between text-xs font-semibold text-slate-200 hover:text-white transition cursor-pointer"
-                >
-                  <span>{faq.q}</span>
-                  <ChevronDown
-                    className={`w-4 h-4 text-slate-500 transition-transform duration-200 ${
-                      expandedFaq === idx ? 'rotate-180 text-white' : ''
-                    }`}
-                  />
-                </button>
-                {expandedFaq === idx && (
-                  <div className="px-4 pb-4 pt-1 text-xs text-slate-400 leading-relaxed border-t border-slate-800/50">
-                    {faq.a}
+                <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+                  {/* Leading Index & Title */}
+                  <div className="space-y-2 flex-1">
+                    <div className="flex items-center gap-3">
+                      <span className="font-mono text-sm sm:text-base text-[#FF4D00] font-bold">
+                        {item.index}
+                      </span>
+                      {/* Pill Tags */}
+                      <div className="flex flex-wrap gap-1.5">
+                        {item.tags.map((tag, tIdx) => (
+                          <span
+                            key={tIdx}
+                            className="font-mono text-[10px] text-white/80 border border-white/30 rounded-full px-2.5 py-0.5 uppercase"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    <h3 className="font-display uppercase text-2xl sm:text-4xl lg:text-[4vw] leading-[0.92] tracking-[-0.03em] text-white group-hover:translate-x-4 transition-transform duration-300">
+                      {item.title}
+                    </h3>
                   </div>
-                )}
+
+                  {/* Arrow Icon Reveal */}
+                  <div className="flex items-center gap-4 self-end lg:self-center">
+                    <Link
+                      to={item.link}
+                      className="opacity-0 group-hover:opacity-100 transition-all duration-300 text-[#FF4D00] flex items-center gap-2 font-mono text-xs uppercase font-bold"
+                    >
+                      <span>{item.linkText}</span>
+                      <ArrowUpRight className="w-6 h-6 transform group-hover:rotate-45 transition-transform duration-300" strokeWidth={3} />
+                    </Link>
+                  </div>
+                </div>
+
+                <p className="font-sans text-xs sm:text-sm text-white/60 max-w-3xl mt-4 leading-relaxed font-normal">
+                  {item.description}
+                </p>
               </div>
             ))}
           </div>
-        </section>
-
-        {/* Flagship Sandbox Invitation */}
-        <section className="mt-20 w-full p-6 rounded border border-slate-700 bg-slate-900/70 text-left flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-1 max-w-xl">
-            <span className="text-xs font-semibold text-white block">
-              Experience the 3-Pane Judge Sandbox
-            </span>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              Watch Buyer (ja), Seller (es), and Dispatch (en) negotiate and settle in real time across
-              three synchronized viewports with procedural Web Audio feedback.
-            </p>
-          </div>
-          <Link
-            to="/stage"
-            className="px-5 py-2.5 rounded bg-white hover:bg-slate-200 text-slate-950 font-semibold text-xs transition active:scale-98 flex items-center justify-center gap-2 shrink-0 shadow-xs"
-          >
-            <span>Launch Stage Sandbox</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
-        </section>
-      </main>
-
-      {/* Minimal Craft Footer */}
-      <footer className="border-t border-slate-900 py-6 text-xs text-slate-500 max-w-7xl mx-auto w-full px-6 flex flex-col sm:flex-row justify-between items-center gap-3">
-        <div className="flex items-center gap-3">
-          <span className="font-semibold text-slate-400">DisputeGuard AI</span>
-          <span>·</span>
-          <span>Nexconn Build Challenge 2026</span>
-          <span>·</span>
-          <span className="font-mono text-[11px]">MIT License</span>
         </div>
-        <div className="flex items-center gap-4 text-[11px] font-mono text-slate-500">
-          <a
-            href="https://github.com"
-            target="_blank"
-            rel="noreferrer"
-            className="hover:text-slate-300 transition flex items-center gap-1"
-          >
-            <span>GitHub Repository</span>
-            <ExternalLink className="w-3 h-3" />
-          </a>
-          <span>·</span>
-          <Link to="/stage" className="hover:text-slate-300 transition">
-            /stage Sandbox
-          </Link>
+      </section>
+
+      {/* Giant CTA Section */}
+      <section className="bg-[#FF4D00] text-[#000000] py-24 sm:py-36 px-4 sm:px-8 border-b-2 border-[#000000] flex flex-col items-center justify-center text-center">
+        <div className="max-w-6xl mx-auto space-y-8">
+          <span className="font-mono text-xs sm:text-sm font-bold uppercase tracking-widest block text-[#000000]">
+            [NEXCONN BUILD CHALLENGE 2026 // READY TO TEST]
+          </span>
+
+          <h2 className="font-display uppercase text-[12vw] sm:text-[11vw] leading-[0.84] tracking-[-0.04em] text-[#000000] select-none">
+            RESOLVE IN MINUTES.
+          </h2>
+
+          <p className="font-mono text-xs sm:text-base max-w-2xl mx-auto text-[#000000]/80 leading-relaxed">
+            Experience the synchronized 3-pane sandbox with Buyer (ja), Seller (es), and Dispatch (en).
+            Watch real-time live cards, bounded proposals, and auto-settlement.
+          </p>
+
+          <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link
+              to="/stage"
+              className="bg-[#000000] text-white hover:bg-white hover:text-[#000000] hover:scale-105 active:scale-95 transition-transform duration-200 px-10 py-5 rounded-full font-mono text-sm sm:text-base uppercase tracking-wider font-bold border-2 border-[#000000] shadow-2xl flex items-center gap-3"
+            >
+              <span>LAUNCH 3-PANE JUDGE STAGE</span>
+              <ArrowUpRight className="w-5 h-5" strokeWidth={2.5} />
+            </Link>
+            <Link
+              to="/dispatch"
+              className="bg-transparent text-[#000000] hover:bg-[#000000] hover:text-white transition-colors duration-150 px-8 py-5 rounded-full font-mono text-sm uppercase tracking-wider font-bold border-2 border-[#000000]"
+            >
+              <span>STAFF DISPATCH CONSOLE</span>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Kinetic Brutalist Footer */}
+      <footer className="bg-[#FF4D00] text-[#000000] py-8 px-4 sm:px-8 font-mono text-xs">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-t-2 border-[#000000] pt-6">
+          <div className="flex items-center gap-3 font-bold">
+            <span>© 2026 DISPUTEGUARD AI</span>
+            <span>//</span>
+            <span>NEXCONN CHAT SDK</span>
+            <span>//</span>
+            <span>MIT LICENSE</span>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-6 font-bold">
+            <Link to="/stage" className="hover:underline">
+              [STAGE SANDBOX]
+            </Link>
+            <Link to="/buyer" className="hover:underline">
+              [BUYER JA]
+            </Link>
+            <Link to="/seller" className="hover:underline">
+              [SELLER ES]
+            </Link>
+            <Link to="/dispatch" className="hover:underline">
+              [DISPATCH EN]
+            </Link>
+            <a
+              href="https://github.com"
+              target="_blank"
+              rel="noreferrer"
+              className="hover:underline flex items-center gap-1"
+            >
+              <span>GITHUB</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
+          </div>
         </div>
       </footer>
     </div>
