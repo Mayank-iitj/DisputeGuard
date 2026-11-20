@@ -199,7 +199,7 @@ export function getDatabase(): AppDatabase {
     const isTest = process.env.NODE_ENV === 'test';
     const dbPath = isTest
       ? ':memory:'
-      : path.resolve(process.cwd(), 'data', 'disputeguard.sqlite');
+      : process.env.DATABASE_PATH || path.resolve(process.cwd(), 'data', 'disputeguard.sqlite');
     defaultDb = new AppDatabase(dbPath);
   }
   return defaultDb;

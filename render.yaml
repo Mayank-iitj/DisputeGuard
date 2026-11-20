@@ -1,0 +1,41 @@
+services:
+  - type: web
+    name: disputeguard
+    runtime: node
+    plan: starter
+    region: singapore
+    buildCommand: npm install -g pnpm && pnpm install --frozen-lockfile && pnpm build
+    startCommand: pnpm start
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: 22.13.0
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: NEXCONN_APP_KEY
+        value: tdrvipkstz095
+      - key: NEXCONN_APP_SECRET
+        sync: false
+      - key: NEXCONN_DATA_CENTER
+        value: SG
+      - key: NEXCONN_MODE
+        value: fallback
+      - key: JWT_SECRET
+        generateValue: true
+      - key: AI_FIXTURES
+        value: "1"
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: LLM_MODEL_FAST
+        value: claude-3-5-haiku-latest
+      - key: LLM_MODEL_STRONG
+        value: claude-3-5-sonnet-latest
+      - key: AUTO_APPROVE_CEILING_MINOR
+        value: "5000"
+      - key: POLICY_VERSION
+        value: v1
+      - key: DEMO_MODE
+        value: "1"

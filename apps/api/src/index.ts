@@ -7,6 +7,8 @@ import Fastify from 'fastify';
 import cors from '@fastify/cors';
 import jwt from '@fastify/jwt';
 import multipart from '@fastify/multipart';
+import fastifyStatic from '@fastify/static';
+import * as fs from 'node:fs';
 import { WebSocketServer } from 'ws';
 import { getDatabase } from './db/database';
 import { seedDatabase } from './db/seed';
@@ -96,6 +98,32 @@ export async function buildApp() {
 
   // Direct health route
   app.get('/health', async () => ({ status: 'ok', time: Date.now() }));
+
+  // Serve static files from @dg/web/dist in production
+  const possibleWebDistPaths = [
+    path.resolve(__dirname, '../../web/dist'),
+    path.resolve(process.cwd(), 'apps/web/dist'),
+    path.resolve(__dirname, '../../../apps/web/dist'),
+  ];
+  const webDistPath = possibleWebDistPaths.find((p) => fs.existsSync(p));
+
+  if (webDistPath) {
+    await app.register(fastifyStatic, {
+      root: webDistPath,
+      prefix: '/',
+      wildcard: false,
+    });
+
+    // SPA client-side fallback for routes like /buyer, /seller, /dispatch
+    app.setNotFoundHandler((req, reply) => {
+      const url = req.raw.url || '';
+      if (url.startsWith('/api') || url.startsWith('/ws')) {
+        reply.status(404).send({ error: { code: 'NOT_FOUND', message: 'API route not found' } });
+        return;
+      }
+      reply.sendFile('index.html');
+    });
+  }
 
   return { app, outbox };
 }
