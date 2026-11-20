@@ -22,15 +22,10 @@ FROM base AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 ENV PORT=10000
+ENV NODE_PATH="/app/node_modules:/app/apps/api/node_modules"
 
-COPY --from=builder /app/package.json ./
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/packages/shared/dist ./packages/shared/dist
-COPY --from=builder /app/packages/shared/package.json ./packages/shared/package.json
-COPY --from=builder /app/apps/api/dist ./apps/api/dist
-COPY --from=builder /app/apps/api/package.json ./apps/api/package.json
-COPY --from=builder /app/apps/web/dist ./apps/web/dist
-COPY --from=builder /app/apps/web/package.json ./apps/web/package.json
+# Copy full application with intact pnpm workspace symlinks and built artifacts
+COPY --from=builder /app /app
 
 EXPOSE 10000
 
