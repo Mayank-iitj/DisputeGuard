@@ -49,7 +49,19 @@ export const BuyerPortal: React.FC = () => {
 
     const unsubConn = chat.onConnection((s) => setConnStatus(s));
     const unsubMsg = chat.onMessage((m) => {
-      setMessages((prev) => [...prev, m]);
+      setMessages((prev) => {
+        const isDup = prev.some(
+          (existing) =>
+            existing.uid === m.uid ||
+            (existing.channelId === m.channelId &&
+              existing.senderId === m.senderId &&
+              existing.kind === m.kind &&
+              (existing as any).text === (m as any).text &&
+              Math.abs((existing as any).ts - (m as any).ts) < 4000)
+        );
+        if (isDup) return prev;
+        return [...prev, m];
+      });
       // Trigger rich sound feedback
       if (m.kind === 'envelope') {
         if (m.env.kind === 'card.resolution') {

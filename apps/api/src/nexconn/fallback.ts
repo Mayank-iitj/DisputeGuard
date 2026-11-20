@@ -45,7 +45,7 @@ export class FallbackServerImpl implements ServerChatPort {
             const history = this.messages.get(chanId) || [];
             ws.send(JSON.stringify({ type: 'history', channelId: chanId, messages: history }));
           } else if (payload.type === 'send_text') {
-            this.broadcastText(payload.channelId, userId, payload.text);
+            this.broadcastText(payload.channelId, userId, payload.text, payload.uid);
           }
         } catch (e) {
           console.error('Error parsing client WS message:', e);
@@ -112,8 +112,8 @@ export class FallbackServerImpl implements ServerChatPort {
     });
   }
 
-  public broadcastText(channelId: string, senderId: string, text: string): StoredMessage {
-    const uid = `msg_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+  public broadcastText(channelId: string, senderId: string, text: string, clientUid?: string): StoredMessage {
+    const uid = clientUid || `msg_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
     const msg: StoredMessage = {
       uid,
       channelId,

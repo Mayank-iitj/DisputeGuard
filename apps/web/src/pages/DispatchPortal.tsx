@@ -31,7 +31,19 @@ export const DispatchPortal: React.FC = () => {
     });
 
     const unsubMsg = chat.onMessage((m) => {
-      setMessages((prev) => [...prev, m]);
+      setMessages((prev) => {
+        const isDup = prev.some(
+          (existing) =>
+            existing.uid === m.uid ||
+            (existing.channelId === m.channelId &&
+              existing.senderId === m.senderId &&
+              existing.kind === m.kind &&
+              (existing as any).text === (m as any).text &&
+              Math.abs((existing as any).ts - (m as any).ts) < 4000)
+        );
+        if (isDup) return prev;
+        return [...prev, m];
+      });
       if (m.kind === 'envelope') {
         if (m.env.kind === 'card.resolution') {
           soundFx.playResolution();
@@ -147,6 +159,20 @@ export const DispatchPortal: React.FC = () => {
       setActiveDispute(disputeData);
       setBrief(briefData);
       chat.joinChannel(disputeData.channelId);
+      const history = await chat.history(disputeData.channelId);
+      if (history && history.length > 0) {
+        setMessages((prev) => {
+          const map = new Map<string, any>();
+          // Keep existing messages from other channels or earlier
+          for (const m of prev) {
+            map.set(m.uid, m);
+          }
+          for (const m of history) {
+            map.set(m.uid, m);
+          }
+          return Array.from(map.values()).sort((a, b) => a.ts - b.ts);
+        });
+      }
     } catch (e) {
       console.error('Failed to load dispute for agent:', e);
     }

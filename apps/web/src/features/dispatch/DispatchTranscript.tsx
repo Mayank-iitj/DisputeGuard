@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { ChatMessage } from '../../nexconn/port';
 import { Send, AlertCircle, Languages, Lock, ShieldCheck, MessageSquare } from 'lucide-react';
 import { api } from '../../api/client';
@@ -10,6 +10,12 @@ interface Props {
   onSendMessage: (text: string) => void;
 }
 
+interface TranslationInfo {
+  translation: string;
+  sourceLang: string;
+  toneNote?: string | null;
+}
+
 export const DispatchTranscript: React.FC<Props> = ({ dispute, messages, onSendMessage }) => {
   const [intent, setIntent] = useState<string>('de_escalate');
   const [targetParty, setTargetParty] = useState<'buyer' | 'seller'>('buyer');
@@ -18,6 +24,59 @@ export const DispatchTranscript: React.FC<Props> = ({ dispute, messages, onSendM
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [warnings, setWarnings] = useState<string[]>([]);
   const [showOriginalMap, setShowOriginalMap] = useState<Record<string, boolean>>({});
+  const [translations, setTranslations] = useState<Record<string, TranslationInfo>>({});
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  // Filter messages for active dispute & deduplicate by UID
+  const channelMessages = useMemo(() => {
+    const list = messages.filter(
+      (m) => !m.channelId || !dispute?.channelId || m.channelId === dispute.channelId
+    );
+    const seen = new Set<string>();
+    return list.filter((m) => {
+      if (seen.has(m.uid)) return false;
+      seen.add(m.uid);
+      return true;
+    });
+  }, [messages, dispute?.channelId]);
+
+  // Auto-scroll on new messages
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [channelMessages.length]);
+
+  // Auto-translate foreign text messages to English for the arbitrator console
+  useEffect(() => {
+    if (!dispute?.id) return;
+    const textMessages = channelMessages.filter(
+      (m) => m.kind === 'text' && (m as any).text && !translations[m.uid]
+    );
+    if (textMessages.length === 0) return;
+
+    const itemsToFetch = textMessages.map((m) => ({
+      messageUid: m.uid,
+      text: (m as any).text,
+    }));
+
+    api
+      .translate(dispute.id, 'en', itemsToFetch)
+      .then((res) => {
+        setTranslations((prev) => {
+          const next = { ...prev };
+          for (const item of res.items) {
+            next[item.messageUid] = {
+              translation: item.translation,
+              sourceLang: item.sourceLang,
+              toneNote: item.toneNote,
+            };
+          }
+          return next;
+        });
+      })
+      .catch((err) => {
+        console.warn('Dispatch auto-translate error:', err);
+      });
+  }, [channelMessages, dispute?.id]);
 
   const handleGenerateDraft = async () => {
     if (!dispute) return;
@@ -91,7 +150,7 @@ export const DispatchTranscript: React.FC<Props> = ({ dispute, messages, onSendM
           Synchronized Case Transcript (Translated to English)
         </div>
 
-        {messages.map((m) => {
+        {channelMessages.map((m) => {
           if (m.kind === 'envelope') {
             return (
               <div
@@ -103,7 +162,10 @@ export const DispatchTranscript: React.FC<Props> = ({ dispute, messages, onSendM
             );
           }
 
-          const showOrig = showOriginalMap[m.uid];
+          const trans = translations[m.uid];
+          const hasTranslation = !!(trans && trans.translation && trans.translation !== m.text);
+          const showOrig = !!showOriginalMap[m.uid];
+          const displayText = hasTranslation && !showOrig ? trans.translation : m.text;
           const isAgent = m.senderId === dispute.assignedAgentId || m.senderId.includes('agent');
 
           return (
@@ -113,30 +175,51 @@ export const DispatchTranscript: React.FC<Props> = ({ dispute, messages, onSendM
                 isAgent ? 'ml-auto' : 'mr-auto'
               }`}
             >
-              <div className="flex items-center gap-1 text-[10px] font-mono text-slate-400 mb-0.5 px-1">
-                <span>{m.senderId}</span>
-                <span>·</span>
-                <button
-                  onClick={() => toggleOriginal(m.uid)}
-                  className="text-slate-600 hover:text-slate-900 underline flex items-center gap-0.5 cursor-pointer"
-                >
-                  <Languages className="w-2.5 h-2.5" />
-                  <span>{showOrig ? 'English' : 'Original'}</span>
-                </button>
+              <div className="flex items-center gap-1.5 text-[10px] font-mono text-slate-400 mb-0.5 px-1">
+                <span className="font-semibold text-slate-600">{m.senderId}</span>
+                {trans?.sourceLang && (
+                  <>
+                    <span>·</span>
+                    <span className="uppercase text-[9px] px-1 py-0.2 bg-slate-200 text-slate-600 rounded font-mono font-medium">
+                      {trans.sourceLang}
+                    </span>
+                  </>
+                )}
+                {hasTranslation && (
+                  <>
+                    <span>·</span>
+                    <button
+                      type="button"
+                      onClick={() => toggleOriginal(m.uid)}
+                      className="text-slate-600 hover:text-slate-900 underline flex items-center gap-1 cursor-pointer font-sans text-[11px]"
+                    >
+                      <Languages className="w-3 h-3 text-slate-500" />
+                      <span>{showOrig ? 'Show English' : 'Show Original'}</span>
+                    </button>
+                  </>
+                )}
               </div>
 
               <div
-                className={`p-3 rounded-md text-xs leading-relaxed ${
+                className={`p-3 rounded-md text-xs leading-relaxed shadow-xs ${
                   isAgent
                     ? 'bg-slate-900 text-white'
                     : 'bg-white text-slate-800 border border-slate-200'
                 }`}
               >
-                <p>{m.text}</p>
+                <p>{displayText}</p>
               </div>
+
+              {trans?.toneNote && !showOrig && (
+                <div className="mt-1 px-1 flex items-center gap-1.5 text-[10px] font-sans font-medium text-amber-800 bg-amber-50 px-2 py-0.5 rounded border border-amber-200 max-w-fit">
+                  <AlertCircle className="w-3 h-3 text-amber-600 shrink-0" />
+                  <span>{trans.toneNote}</span>
+                </div>
+              )}
             </div>
           );
         })}
+        <div ref={bottomRef} />
       </div>
 
       {/* Copilot Draft docked at bottom */}

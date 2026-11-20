@@ -28,7 +28,14 @@ export const translateRoutes: FastifyPluginAsync = async (fastify) => {
 
     for (const item of items) {
       const cached = checkCache.get(item.messageUid, targetLang) as any;
-      if (cached) {
+      const isStaleFallback =
+        cached &&
+        cached.source_lang !== targetLang &&
+        (cached.text === item.text ||
+          cached.text === 'Customer message regarding order inquiry.' ||
+          cached.text === 'Mensaje de soporte recibido sobre la orden.');
+
+      if (cached && !isStaleFallback) {
         results.push({
           messageUid: item.messageUid,
           sourceLang: cached.source_lang,

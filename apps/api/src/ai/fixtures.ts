@@ -17,19 +17,128 @@ export class FixtureLlmImpl implements LlmPort {
     const { text, targetLang } = params;
     const lower = text.trim().toLowerCase();
 
-    // Specific demo phrases
-    if (text.includes('コップが割れて') || text.includes('割れて届きました') || text.includes('割れていました')) {
+    // Specific demo phrases for Japanese Buyer & Multi-lingual disputes
+    // 1. M-size / L-size scarf dispute (dsp_1044 msg 1)
+    if (text.includes('注文票') || text.includes('55cm') || text.includes('70cm') || text.includes('Mサイズ') || text.includes('Lサイズ')) {
       if (targetLang === 'es') {
         return {
           source_lang: 'ja',
-          translation: 'Las tazas llegaron rotas.',
+          translation: 'Especificé la talla M (55 cm) en el pedido, pero el producto recibido tiene una etiqueta de talla L (70 cm) y el color también es diferente. ¿Podría cambiarlo?',
           tone_note: null,
         };
       }
       if (targetLang === 'en') {
         return {
           source_lang: 'ja',
-          translation: 'The cup arrived cracked.',
+          translation: 'I specified size M (55cm) on the order form, but the delivered product is labeled size L (70cm) and the color is different. Could you please exchange it?',
+          tone_note: null,
+        };
+      }
+    }
+
+    // 2. Tatemae politeness masking rising frustration (dsp_1044 msg 2)
+    if (text.includes('度々のご連絡') || text.includes('3回ほど') || text.includes('三回目') || (text.includes('お問い合わせ') && text.includes('恐縮'))) {
+      if (targetLang === 'es') {
+        return {
+          source_lang: 'ja',
+          translation: 'Lamento mucho tener que contactar repetidamente. Ya he enviado tres consultas similares; ¿cuándo podré recibir una respuesta concreta? Agradezco de antemano su amable atención.',
+          tone_note: 'Tatemae politeness masking rising frustration (3rd follow-up)',
+        };
+      }
+      if (targetLang === 'en') {
+        return {
+          source_lang: 'ja',
+          translation: 'I am very sorry to contact you repeatedly. I have already made similar inquiries about 3 times; when might I expect a concrete response? I apologize for the inconvenience during your busy schedule and thank you for your assistance.',
+          tone_note: 'Tatemae politeness masking rising frustration (3rd follow-up)',
+        };
+      }
+    }
+
+    // 3. Chargeback threat trigger (dsp_1044 msg 3)
+    if (text.includes('チャージバック') || text.includes('カード会社') || text.includes('明確な解決策')) {
+      if (targetLang === 'es') {
+        return {
+          source_lang: 'ja',
+          translation: 'Si no se presenta una solución clara hoy, solicitaré un contracargo a través de la compañía de mi tarjeta de crédito.',
+          tone_note: 'Escalation: buyer threatens chargeback',
+        };
+      }
+      if (targetLang === 'en') {
+        return {
+          source_lang: 'ja',
+          translation: 'If a clear solution is not presented today, I will have no choice but to initiate a chargeback through my credit card company.',
+          tone_note: 'Escalation: buyer threatens chargeback',
+        };
+      }
+    }
+
+    // 4. Copilot agent de-escalation message
+    if (text.includes('サポート担当のPriya') || (text.includes('ご不便をおかけして') && text.includes('Priya')) || text.includes('速やかに解決手続き')) {
+      if (targetLang === 'es') {
+        return {
+          source_lang: 'ja',
+          translation: 'Lamentamos profundamente las molestias. Priya del equipo de soporte atenderá este caso. Procederemos de inmediato con la resolución según los términos de la póliza.',
+          tone_note: null,
+        };
+      }
+      if (targetLang === 'en') {
+        return {
+          source_lang: 'ja',
+          translation: 'We sincerely apologize for the inconvenience. Priya from support will handle this. We will promptly proceed with the resolution process based on policy terms.',
+          tone_note: null,
+        };
+      }
+    }
+
+    // 5. Copilot partial refund proposal
+    if (text.includes('規約に基づき') && text.includes('一部返金')) {
+      if (targetLang === 'es') {
+        return {
+          source_lang: 'ja',
+          translation: 'De acuerdo con la política, proponemos una resolución de reembolso parcial mientras conserva el producto. ¿Podría revisar los detalles?',
+          tone_note: null,
+        };
+      }
+      if (targetLang === 'en') {
+        return {
+          source_lang: 'ja',
+          translation: 'In accordance with policy, we propose a partial refund while you retain the item. Could you please review this proposal?',
+          tone_note: null,
+        };
+      }
+    }
+
+    // 6. Copilot request evidence
+    if (text.includes('お手数をおかけして申し訳ございません') && (text.includes('写真') || text.includes('外箱'))) {
+      if (targetLang === 'es') {
+        return {
+          source_lang: 'ja',
+          translation: 'Disculpe las molestias. Para inspeccionar el caso, ¿podría facilitarnos fotos del producto y del embalaje?',
+          tone_note: null,
+        };
+      }
+      if (targetLang === 'en') {
+        return {
+          source_lang: 'ja',
+          translation: 'We apologize for the trouble. To inspect the status, could you please provide photos of the product and outer packaging?',
+          tone_note: null,
+        };
+      }
+    }
+
+    // 7. Cracked mug dispute (dsp_1042 msg 1)
+    if (text.includes('コップが割れて') || text.includes('割れて届きました') || text.includes('割れていました') || text.includes('マグカップのふち') || text.includes('亀裂')) {
+      if (targetLang === 'es') {
+        return {
+          source_lang: 'ja',
+          translation: 'Al abrir el paquete encontré una grieta notable en el borde de la taza. Era un regalo importante, así que estoy muy consternada. Agradecería su pronta confirmación.',
+          tone_note: null,
+        };
+      }
+      if (targetLang === 'en') {
+        return {
+          source_lang: 'ja',
+          translation: 'Thank you for your assistance. Upon unpacking, I found a noticeable crack along the rim of the mug. This was an important gift, so I am very distressed. I would appreciate your prompt confirmation.',
           tone_note: null,
         };
       }
@@ -52,23 +161,6 @@ export class FixtureLlmImpl implements LlmPort {
       }
     }
 
-    if (text.includes('チャージバック') || text.includes('カード会社')) {
-      if (targetLang === 'es') {
-        return {
-          source_lang: 'ja',
-          translation: 'Si esto no se resuelve, solicitaré un contracargo a mi compañía de tarjeta.',
-          tone_note: 'Escalation: buyer threatens chargeback',
-        };
-      }
-      if (targetLang === 'en') {
-        return {
-          source_lang: 'ja',
-          translation: 'If this is not resolved, I will request a chargeback from my credit card company.',
-          tone_note: 'Escalation: buyer threatens chargeback',
-        };
-      }
-    }
-
     if (text.includes('no es mi culpa') || text.includes('embalaje perfecto')) {
       if (targetLang === 'ja') {
         return {
@@ -82,6 +174,23 @@ export class FixtureLlmImpl implements LlmPort {
           source_lang: 'es',
           translation: 'The packaging was perfect. It is not my fault.',
           tone_note: 'Defensive seller tone',
+        };
+      }
+    }
+
+    if (text.includes('plástico de burbujas') || text.includes('Valencia') || text.includes('lamento mucho')) {
+      if (targetLang === 'ja') {
+        return {
+          source_lang: 'es',
+          translation: 'アイコさん、大変申し訳ありません。商品はすべてバレンシアを出荷する前に三重の気泡緩衝材で検査しております。外箱と破損箇所の写真を共有していただけますでしょうか？',
+          tone_note: null,
+        };
+      }
+      if (targetLang === 'en') {
+        return {
+          source_lang: 'es',
+          translation: 'Hello Aiko, I am very sorry to hear that. All our products are inspected with triple-layer bubble wrap before leaving Valencia. Could you please share photos of the exterior package and the break?',
+          tone_note: null,
         };
       }
     }

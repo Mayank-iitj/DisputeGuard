@@ -328,10 +328,26 @@ export class NexconnWebChatClient implements ChatPort {
     if (!raw) return;
     const uid = raw.uid || (raw.env && raw.env.id) || `temp_${Math.random()}`;
 
-    // Deduplicate
+    // 1. Deduplicate by UID
     if (this.seenUids.has(uid)) {
       return;
     }
+
+    // 2. Content & sender deduplication within 4-second window to prevent duplicate echo
+    if (raw.text) {
+      const isDuplicate = this.messageBuffer.some((m) => {
+        if (m.kind !== 'text' || m.channelId !== raw.channelId || m.senderId !== raw.senderId) {
+          return false;
+        }
+        return m.text === raw.text && Math.abs(m.ts - (raw.ts || Date.now())) < 4000;
+      });
+
+      if (isDuplicate) {
+        this.seenUids.add(uid);
+        return;
+      }
+    }
+
     this.seenUids.add(uid);
 
     const env = parseDgEnvelope(raw.text);
