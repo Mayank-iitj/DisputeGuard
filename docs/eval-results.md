@@ -1,6 +1,6 @@
 # Evaluation Results: DisputeGuard AI
 
-Measured evaluation benchmarks across the AI Gateway, Escalation Firewall, and Policy Engine for the Nexconn Build Challenge 2026.
+Measured evaluation benchmarks across the AI Gateway, Escalation Firewall, and Policy Engine for DisputeGuard Enterprise.
 
 ---
 

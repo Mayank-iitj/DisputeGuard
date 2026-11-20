@@ -1,6 +1,6 @@
 # PRD: DisputeGuard AI
 
-Version 1.0 | Nexconn Build Challenge 2026 | Owner: Mayank Sharma
+Version 1.0 | Enterprise Specification | Owner: Mayank Sharma
 
 ---
 

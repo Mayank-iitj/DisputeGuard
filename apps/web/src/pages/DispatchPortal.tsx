@@ -6,6 +6,8 @@ import { DispatchHeader } from '../features/dispatch/DispatchHeader';
 import { DispatchQueue } from '../features/dispatch/DispatchQueue';
 import { DispatchTranscript } from '../features/dispatch/DispatchTranscript';
 import { DispatchSidePanel } from '../features/dispatch/DispatchSidePanel';
+import { PersonaBar } from '../components/PersonaBar';
+import { soundFx } from '../services/soundFx';
 import { AgentBrief, AgentMetricsResponse, QueueItem } from '@dg/shared';
 
 export const DispatchPortal: React.FC = () => {
@@ -30,6 +32,17 @@ export const DispatchPortal: React.FC = () => {
 
     const unsubMsg = chat.onMessage((m) => {
       setMessages((prev) => [...prev, m]);
+      if (m.kind === 'envelope') {
+        if (m.env.kind === 'card.resolution') {
+          soundFx.playResolution();
+        } else if (m.env.kind === 'card.alert_notice') {
+          soundFx.playFreeze();
+        } else {
+          soundFx.playCard();
+        }
+      } else {
+        soundFx.playMessage();
+      }
       // If ops queue delta event received, refresh queue!
       if (m.kind === 'envelope' && m.env.kind === 'evt.queue_delta') {
         refreshQueue();
@@ -40,7 +53,7 @@ export const DispatchPortal: React.FC = () => {
     if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
       bc = new BroadcastChannel('disputeguard_realtime_bus');
       bc.onmessage = (event) => {
-        if (event.data?.type === 'stage_action') {
+        if (event.data?.type === 'stage_action' || event.data?.type === 'realtime_event') {
           if (event.data.action === 'select_dispatch' && event.data.disputeId) {
             handleSelectDispute(event.data.disputeId);
             refreshQueue();
@@ -139,12 +152,23 @@ export const DispatchPortal: React.FC = () => {
     }
   };
 
+  const broadcastRealtimeAction = (action: string, disputeId?: string) => {
+    if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
+      try {
+        const bus = new BroadcastChannel('disputeguard_realtime_bus');
+        bus.postMessage({ type: 'realtime_event', action, disputeId });
+        bus.close();
+      } catch (e) {}
+    }
+  };
+
   const handleTakeover = async () => {
     if (!selectedDisputeId) return;
     try {
       await api.takeover(selectedDisputeId, true);
       await handleSelectDispute(selectedDisputeId);
       refreshQueue();
+      broadcastRealtimeAction('refresh_dispute', selectedDisputeId);
     } catch (e) {
       console.error('Takeover failed:', e);
     }
@@ -153,6 +177,7 @@ export const DispatchPortal: React.FC = () => {
   const handleSendMessage = async (text: string) => {
     if (!activeDispute) return;
     await chat.sendText(activeDispute.channelId, text);
+    broadcastRealtimeAction('refresh_dispute', activeDispute.id);
   };
 
   const handleResolve = async (
@@ -161,9 +186,11 @@ export const DispatchPortal: React.FC = () => {
   ) => {
     if (!selectedDisputeId) return;
     try {
+      soundFx.playResolution();
       await api.resolveDispute(selectedDisputeId, action, note);
       await handleSelectDispute(selectedDisputeId);
       refreshData();
+      broadcastRealtimeAction('refresh_dispute', selectedDisputeId);
     } catch (e) {
       console.error('Resolve failed:', e);
     }
@@ -175,6 +202,7 @@ export const DispatchPortal: React.FC = () => {
       await api.unfreeze(selectedDisputeId, reason);
       await handleSelectDispute(selectedDisputeId);
       refreshData();
+      broadcastRealtimeAction('refresh_dispute', selectedDisputeId);
     } catch (e) {
       console.error('Unfreeze failed:', e);
     }
@@ -182,6 +210,7 @@ export const DispatchPortal: React.FC = () => {
 
   return (
     <div className="flex flex-col h-full bg-slate-900 font-sans">
+      <PersonaBar />
       <DispatchHeader
         metrics={metrics}
         agentName={user?.name || 'Priya Sharma'}

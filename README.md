@@ -9,8 +9,6 @@
 
 Every order dispute becomes a synchronized **Nexconn Chat channel** featuring real-time multilingual translation, structured photo proof assessment, deterministic policy-bounded settlement proposals, an automated cross-cultural Escalation Firewall, and an arbitrator Dispatch Center with AI Copilot.
 
-Built for the **Nexconn Build Challenge 2026** (Reskilll x Nexconn).
-
 ---
 
 ## 🌟 The Core Problem
@@ -34,7 +32,7 @@ When an international parcel crosses a border, the dispute crosses a language an
 | **3. Deterministic Policy Proposals** | Code computes, AI only proposes. Policy Engine (v1) outputs bounded settlement options (e.g. 40% partial refund vs replacement). Counter-proposals are strictly bounded to 50%–150%. |
 | **4. Escalation Firewall** | Cross-cultural threat lexicon monitors risk signals (chargeback, legal, fraud). On threat detection, escrow instantly freezes, a neutral bilingual card appears, and the case routes to Dispatch. |
 | **5. Dispatch Console & Copilot** | Pro-arbitrator console with priority queue ranking, AI brief with confidential threat quotes, grounded bilingual drafting, and 1-click escrow resolution. |
-| **6. Flagship `/stage` 3-Pane Sandbox** | Renders Buyer, Seller, and Dispatch simultaneously in synchronized iframes with automated step-by-step playback and pure Web Audio API sound effects. |
+| **6. Multi-Party Live Synchronization** | Synchronizes Buyer, Seller, and Dispatch portals simultaneously in real time across WebSocket and BroadcastChannel with sound effects and instant scenario triggers. |
 
 ---
 
@@ -173,9 +171,10 @@ disputeguard/
 │   │   ├── src/routes/       # REST routes (/api/v1/disputes, /proposals, /agent, etc.)
 │   │   └── scripts/smoke.js  # E2E API smoke test runner
 │   └── web/                  # React 18 + Vite + Tailwind CSS frontend
-│       ├── src/pages/        # /stage (flagship), /buyer, /seller, /dispatch
+│       ├── src/pages/        # /buyer, /seller, /dispatch, /
+│       ├── src/components/   # PersonaBar (Universal Persona Switcher & Live Simulator)
 │       ├── src/features/     # Cards, chat list, composer, evidence modal, dispatch
-│       └── src/services/     # stageDriver (automated runner), soundFx (Web Audio API)
+│       └── src/services/     # stageDriver (simulator driver), soundFx (Web Audio API)
 └── docs/                     # Specifications, TRD, PRD, Eval results, System Design
 ```
 
@@ -186,12 +185,12 @@ disputeguard/
 From our benchmark evaluation in `docs/eval-results.md`:
 - **Risk Firewall Accuracy:** 100% on test suite (chargeback, legal, police threats flagged; benign mentions and negations correctly unflagged).
 - **Escrow State Machine:** Invariant verified — funds cannot transition directly from `HELD` to `SETTLED` without prior mutual agreement or arbitrator signature.
-- **Latency:** Cross-iframe message synchronization < 5ms via browser `BroadcastChannel` with fallback to WebSocket.
+- **Latency:** Cross-tab message synchronization < 5ms via browser `BroadcastChannel` with fallback to WebSocket.
 - **Envelope Parser:** 100% roundtrip compatibility between native JSON envelopes and text-based `DG1:` fallback format.
 
 ---
 
 ## 📄 License
 
-MIT License. Designed and built with pride for the **Nexconn Build Challenge 2026**.
-# DisputeGuard
+MIT License. Designed and built for high-reliability cross-border dispute & escrow resolution.
+

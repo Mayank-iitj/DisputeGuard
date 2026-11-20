@@ -6,6 +6,8 @@ import { MessageList } from '../features/chat/MessageList';
 import { Composer } from '../features/chat/Composer';
 import { EvidenceModal } from '../features/evidence/EvidenceModal';
 import { CounterSheet } from '../features/chat/CounterSheet';
+import { PersonaBar } from '../components/PersonaBar';
+import { soundFx } from '../services/soundFx';
 import {
   Store,
   ShieldCheck,
@@ -38,8 +40,18 @@ export const SellerPortal: React.FC = () => {
     const unsubConn = chat.onConnection((s) => setConnStatus(s));
     const unsubMsg = chat.onMessage((m) => {
       setMessages((prev) => [...prev, m]);
-      if (m.kind === 'envelope' && m.env.kind === 'card.resolution') {
-        setActiveDispute((prev: any) => (prev ? { ...prev, status: 'RESOLVED' } : prev));
+      if (m.kind === 'envelope') {
+        if (m.env.kind === 'card.resolution') {
+          soundFx.playResolution();
+          setActiveDispute((prev: any) => (prev ? { ...prev, status: 'RESOLVED' } : prev));
+        } else if (m.env.kind === 'card.alert_notice') {
+          soundFx.playFreeze();
+          setActiveDispute((prev: any) => (prev ? { ...prev, frozen: true, risk: { ...prev.risk, frozen: true, band: 'high' } } : prev));
+        } else {
+          soundFx.playCard();
+        }
+      } else {
+        soundFx.playMessage();
       }
     });
 
@@ -47,7 +59,7 @@ export const SellerPortal: React.FC = () => {
     if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
       bc = new BroadcastChannel('disputeguard_realtime_bus');
       bc.onmessage = (event) => {
-        if (event.data?.type === 'stage_action') {
+        if (event.data?.type === 'stage_action' || event.data?.type === 'realtime_event') {
           if (event.data.action === 'select_dispute' && event.data.disputeId) {
             openDispute(event.data.disputeId);
           } else if (event.data.action === 'refresh_dispute') {
@@ -88,9 +100,20 @@ export const SellerPortal: React.FC = () => {
     }
   };
 
+  const broadcastRealtimeAction = (action: string, disputeId?: string) => {
+    if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
+      try {
+        const bus = new BroadcastChannel('disputeguard_realtime_bus');
+        bus.postMessage({ type: 'realtime_event', action, disputeId });
+        bus.close();
+      } catch (e) {}
+    }
+  };
+
   const handleSendMessage = async (text: string) => {
     if (!activeDispute) return;
     const { uid } = await chat.sendText(activeDispute.channelId, text);
+    broadcastRealtimeAction('refresh_dispute', activeDispute.id);
     try {
       await api.observe(activeDispute.id, uid, text);
     } catch (e) {
@@ -104,6 +127,7 @@ export const SellerPortal: React.FC = () => {
       await api.respondProposal(activeDispute.id, activeDispute.proposal.id, 'accept', optionId);
       const updated = await api.getDispute(activeDispute.id);
       setActiveDispute(updated);
+      broadcastRealtimeAction('refresh_dispute', activeDispute.id);
     } catch (e) {
       console.error('Error accepting proposal:', e);
     }
@@ -128,6 +152,7 @@ export const SellerPortal: React.FC = () => {
       );
       const updated = await api.getDispute(activeDispute.id);
       setActiveDispute(updated);
+      broadcastRealtimeAction('refresh_dispute', activeDispute.id);
     } catch (e) {
       console.error('Error submitting counter:', e);
     }
@@ -139,6 +164,7 @@ export const SellerPortal: React.FC = () => {
       await api.respondProposal(activeDispute.id, activeDispute.proposal.id, 'decline', optionId);
       const updated = await api.getDispute(activeDispute.id);
       setActiveDispute(updated);
+      broadcastRealtimeAction('refresh_dispute', activeDispute.id);
     } catch (e) {
       console.error('Error declining proposal:', e);
     }
@@ -151,6 +177,7 @@ export const SellerPortal: React.FC = () => {
       setShowEvidenceModal(false);
       const updated = await api.getDispute(activeDispute.id);
       setActiveDispute(updated);
+      broadcastRealtimeAction('refresh_dispute', activeDispute.id);
     } catch (e) {
       console.error('Error uploading counter evidence:', e);
     }
@@ -161,6 +188,7 @@ export const SellerPortal: React.FC = () => {
 
   return (
     <div className="flex flex-col h-full bg-slate-50 font-sans">
+      <PersonaBar />
       <header className="h-12 bg-white border-b border-slate-200 px-4 flex items-center justify-between shrink-0 antialiased">
         <div className="flex items-center gap-2">
           {activeDispute ? (

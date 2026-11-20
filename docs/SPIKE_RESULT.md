@@ -1,7 +1,7 @@
 # SPIKE_RESULT.md: Nexconn Chat SDK Integration Spike
 
 **Date:** Nov 17, 2026  
-**Challenge:** Nexconn Build Challenge 2026 (Reskilll x Nexconn)  
+**Scope:** Cross-Border Escrow Resolution Architecture  
 **Project:** DisputeGuard AI  
 
 ---

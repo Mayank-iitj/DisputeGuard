@@ -52,8 +52,8 @@ export const LandingPage: React.FC = () => {
       tags: ['NEXCONN SDK', 'LIVE JA ↔ ES', 'CULTURAL SENTIMENT', '<5MS BUS'],
       description:
         'Aiko writes in formal Japanese; Marco instantly reads in Spanish. Cultural politeness masking is flagged when formal phrasing conceals elevated frustration before escalation.',
-      link: '/stage',
-      linkText: 'SEE TRANSLATION IN STAGE',
+      link: '/buyer',
+      linkText: 'TEST BILINGUAL CHAT',
     },
     {
       index: '02 //',
@@ -61,8 +61,8 @@ export const LandingPage: React.FC = () => {
       tags: ['GUIDED CAPTURE', 'PERCEPTUAL HASH', 'SEVERITY 1-3', 'ADVISORY LABEL'],
       description:
         'Claiming damage triggers a guided 3-angle capture stepper. AI vision analyzes cracks and packaging, returning severity with an explicit "AI-assessed, not verified" disclosure.',
-      link: '/stage',
-      linkText: 'VIEW EVIDENCE MODAL',
+      link: '/buyer',
+      linkText: 'SUBMIT DAMAGE PROOF',
     },
     {
       index: '03 //',
@@ -70,8 +70,8 @@ export const LandingPage: React.FC = () => {
       tags: ['CODE ENFORCED', '50%-150% BOUNDS', '$50 CEILING', 'ZERO INJECTION'],
       description:
         'Code computes, AI only proposes. Policy Engine (v1) outputs bounded options with a hard $50.00 auto-approve ceiling. Counters are strictly bound to 50%–150% of baseline.',
-      link: '/stage',
-      linkText: 'INSPECT POLICY OPTIONS',
+      link: '/seller',
+      linkText: 'VIEW POLICY PROPOSAL',
     },
     {
       index: '04 //',
@@ -79,8 +79,8 @@ export const LandingPage: React.FC = () => {
       tags: ['THREAT LEXICON', 'ATOMIC FREEZE', 'NEUTRAL NOTICE', 'AUDIT READY'],
       description:
         'Active threat scanner monitors chargeback, police, and legal keywords across languages. Instantly freezes escrow and summons human dispatch without leaking risk details.',
-      link: '/stage',
-      linkText: 'TEST ESCROW FREEZE',
+      link: '/buyer',
+      linkText: 'TRIGGER ESCALATION FREEZE',
     },
     {
       index: '05 //',
@@ -107,10 +107,10 @@ export const LandingPage: React.FC = () => {
         {/* Center Floating Pill Navigation */}
         <nav className="pointer-events-auto bg-[#000000] text-white rounded-full px-2 py-1.5 shadow-2xl border-2 border-[#000000] flex items-center gap-1 sm:gap-2">
           <Link
-            to="/stage"
+            to="/dispatch"
             className="font-mono text-[11px] sm:text-[12px] uppercase tracking-tight text-white px-3 py-1.5 rounded-full hover:bg-[#FFFFFF] hover:text-[#000000] transition-colors duration-150 font-bold"
           >
-            JUDGE STAGE
+            DISPATCH CONSOLE
           </Link>
           <Link
             to="/buyer"
@@ -123,12 +123,6 @@ export const LandingPage: React.FC = () => {
             className="font-mono text-[11px] sm:text-[12px] uppercase tracking-tight text-white/80 px-3 py-1.5 rounded-full hover:bg-[#FFFFFF] hover:text-[#000000] transition-colors duration-150 hidden md:inline-block"
           >
             SELLER (ES)
-          </Link>
-          <Link
-            to="/dispatch"
-            className="font-mono text-[11px] sm:text-[12px] uppercase tracking-tight text-white/80 px-3 py-1.5 rounded-full hover:bg-[#FFFFFF] hover:text-[#000000] transition-colors duration-150"
-          >
-            DISPATCH
           </Link>
         </nav>
 
@@ -172,11 +166,17 @@ export const LandingPage: React.FC = () => {
             <span className="text-[#000000]/80 block">HUMAN ARBITRATOR APPROVES ABOVE $50</span>
             <div className="mt-3 flex items-center gap-2">
               <Link
-                to="/stage"
+                to="/dispatch"
                 className="bg-[#000000] text-white hover:bg-white hover:text-[#000000] font-mono text-xs uppercase px-4 py-2 rounded-full border-2 border-[#000000] transition-colors duration-150 font-bold flex items-center gap-1.5"
               >
-                <span>OPEN 3-PANE STAGE</span>
+                <span>OPEN DISPATCH CONSOLE</span>
                 <ArrowUpRight className="w-3.5 h-3.5" />
+              </Link>
+              <Link
+                to="/buyer"
+                className="bg-transparent text-[#000000] hover:bg-[#000000] hover:text-white font-mono text-xs uppercase px-4 py-2 rounded-full border-2 border-[#000000] transition-colors duration-150 font-bold flex items-center gap-1.5"
+              >
+                <span>BUYER (JA)</span>
               </Link>
             </div>
           </div>
@@ -503,7 +503,7 @@ export const LandingPage: React.FC = () => {
       <section className="bg-[#FF4D00] text-[#000000] py-24 sm:py-36 px-4 sm:px-8 border-b-2 border-[#000000] flex flex-col items-center justify-center text-center">
         <div className="max-w-6xl mx-auto space-y-8">
           <span className="font-mono text-xs sm:text-sm font-bold uppercase tracking-widest block text-[#000000]">
-            [NEXCONN BUILD CHALLENGE 2026 // READY TO TEST]
+            [AUTONOMOUS DISPUTE & ESCROW INFRASTRUCTURE // LIVE MVP]
           </span>
 
           <h2 className="font-display uppercase text-[12vw] sm:text-[11vw] leading-[0.92] sm:leading-[0.88] tracking-[-0.04em] text-[#000000] select-none">
@@ -511,23 +511,23 @@ export const LandingPage: React.FC = () => {
           </h2>
 
           <p className="font-mono text-xs sm:text-base max-w-2xl mx-auto text-[#000000]/80 leading-relaxed">
-            Experience the synchronized 3-pane sandbox with Buyer (ja), Seller (es), and Dispatch (en).
-            Watch real-time live cards, bounded proposals, and auto-settlement.
+            Enterprise autonomous dispute resolution. Real-time bilingual chat in Japanese & Spanish,
+            guided 3-angle computer vision evidence assessment, deterministic bounded proposals, and atomic escrow release.
           </p>
 
           <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
-              to="/stage"
+              to="/dispatch"
               className="bg-[#000000] text-white hover:bg-white hover:text-[#000000] hover:scale-105 active:scale-95 transition-transform duration-200 px-10 py-5 rounded-full font-mono text-sm sm:text-base uppercase tracking-wider font-bold border-2 border-[#000000] shadow-2xl flex items-center gap-3"
             >
-              <span>LAUNCH 3-PANE JUDGE STAGE</span>
+              <span>LAUNCH DISPATCH CONSOLE</span>
               <ArrowUpRight className="w-5 h-5" strokeWidth={2.5} />
             </Link>
             <Link
-              to="/dispatch"
+              to="/buyer"
               className="bg-transparent text-[#000000] hover:bg-[#000000] hover:text-white transition-colors duration-150 px-8 py-5 rounded-full font-mono text-sm uppercase tracking-wider font-bold border-2 border-[#000000]"
             >
-              <span>STAFF DISPATCH CONSOLE</span>
+              <span>TEST BUYER PORTAL (JA)</span>
             </Link>
           </div>
         </div>
@@ -545,17 +545,14 @@ export const LandingPage: React.FC = () => {
           </div>
 
           <div className="flex flex-wrap items-center gap-6 font-bold">
-            <Link to="/stage" className="hover:underline">
-              [STAGE SANDBOX]
+            <Link to="/dispatch" className="hover:underline">
+              [DISPATCH CONSOLE]
             </Link>
             <Link to="/buyer" className="hover:underline">
               [BUYER JA]
             </Link>
             <Link to="/seller" className="hover:underline">
               [SELLER ES]
-            </Link>
-            <Link to="/dispatch" className="hover:underline">
-              [DISPATCH EN]
             </Link>
             <a
               href="https://github.com"
