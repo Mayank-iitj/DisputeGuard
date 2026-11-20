@@ -9,6 +9,7 @@ interface Props {
   myStatus?: 'pending' | 'accepted' | 'declined' | 'countered';
   counterpartStatus?: 'pending' | 'accepted' | 'declined' | 'countered';
   isFrozen?: boolean;
+  isResolved?: boolean;
   onAccept?: (optionId: string) => void;
   onCounter?: (optionId: string) => void;
   onDecline?: (optionId: string) => void;
@@ -21,13 +22,16 @@ export const ProposalCard: React.FC<Props> = ({
   myStatus = 'pending',
   counterpartStatus = 'pending',
   isFrozen = false,
+  isResolved = false,
   onAccept,
   onCounter,
   onDecline,
 }) => {
   const [selectedOptionId, setSelectedOptionId] = useState<string>(data.options[0]?.id || '');
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-  const isPending = myStatus === 'pending';
+  const isSettled = isResolved || (data as any).status === 'settled';
+  const isPending = myStatus === 'pending' && !isSettled;
 
   return (
     <div className="my-2.5 mx-auto w-full max-w-lg rounded-lg border border-slate-200 bg-white p-3.5 shadow-xs text-xs antialiased">
@@ -115,26 +119,46 @@ export const ProposalCard: React.FC<Props> = ({
         </div>
       </div>
 
+      {/* Settled / Finalized Indicator */}
+      {isSettled && (
+        <div className="mt-2.5 p-2 bg-emerald-50 border border-emerald-200 rounded text-xs text-emerald-900 flex items-center justify-between font-mono">
+          <div className="flex items-center gap-1.5 font-bold">
+            <Check className="w-4 h-4 text-emerald-600" />
+            <span>Mutual Settlement Finalized — Escrow Released</span>
+          </div>
+          <span className="text-[10px] bg-emerald-200 text-emerald-900 px-2 py-0.5 rounded font-bold uppercase">
+            SETTLED ✓
+          </span>
+        </div>
+      )}
+
       {/* Buttons */}
-      {isPending && !isFrozen && (
+      {isPending && !isFrozen && !isSettled && (
         <div className="mt-2.5 flex gap-2">
           <button
-            onClick={() => onAccept?.(selectedOptionId)}
-            className="flex-1 bg-slate-900 hover:bg-slate-800 text-white font-medium py-1.5 px-3 rounded text-xs flex items-center justify-center gap-1 transition active:scale-98 cursor-pointer"
+            onClick={() => {
+              if (isSubmitting) return;
+              setIsSubmitting(true);
+              onAccept?.(selectedOptionId);
+            }}
+            disabled={isSubmitting}
+            className="flex-1 bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white font-medium py-1.5 px-3 rounded text-xs flex items-center justify-center gap-1 transition active:scale-98 cursor-pointer"
           >
             <Check className="w-3.5 h-3.5" />
-            <span>Accept Proposal</span>
+            <span>{isSubmitting ? 'Accepting...' : 'Accept Proposal'}</span>
           </button>
           <button
             onClick={() => onCounter?.(selectedOptionId)}
-            className="flex-1 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 font-medium py-1.5 px-3 rounded text-xs flex items-center justify-center gap-1 transition active:scale-98 cursor-pointer"
+            disabled={isSubmitting}
+            className="flex-1 bg-white hover:bg-slate-50 disabled:opacity-50 text-slate-700 border border-slate-200 font-medium py-1.5 px-3 rounded text-xs flex items-center justify-center gap-1 transition active:scale-98 cursor-pointer"
           >
             <RefreshCw className="w-3.5 h-3.5 text-slate-400" />
             <span>Counter Offer</span>
           </button>
           <button
             onClick={() => onDecline?.(selectedOptionId)}
-            className="bg-white hover:bg-rose-50 text-rose-700 border border-slate-200 font-medium py-1.5 px-2.5 rounded text-xs flex items-center justify-center gap-1 transition active:scale-98 cursor-pointer"
+            disabled={isSubmitting}
+            className="bg-white hover:bg-rose-50 disabled:opacity-50 text-rose-700 border border-slate-200 font-medium py-1.5 px-2.5 rounded text-xs flex items-center justify-center gap-1 transition active:scale-98 cursor-pointer"
             title="Decline and escalate to arbitrator"
           >
             <X className="w-3.5 h-3.5" />

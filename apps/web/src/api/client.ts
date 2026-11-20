@@ -32,6 +32,11 @@ class ApiClient {
       headers['Authorization'] = `Bearer ${this.jwt}`;
     }
 
+    const method = (options.method || 'GET').toUpperCase();
+    if (['POST', 'PUT', 'PATCH'].includes(method) && !options.body) {
+      options.body = JSON.stringify({});
+    }
+
     const res = await fetch(`${API_BASE}${endpoint}`, {
       ...options,
       headers,

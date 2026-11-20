@@ -25,17 +25,32 @@ export const proposalRoutes: FastifyPluginAsync = async (fastify) => {
       return reply.status(404).send({ error: { code: 'NOT_FOUND', message: 'Dispute not found' } });
     }
 
+    const proposal = appDb.db.prepare('SELECT * FROM proposals WHERE id = ?').get(proposalId) as any;
+    if (!proposal) {
+      return reply.status(404).send({ error: { code: 'NOT_FOUND', message: 'Proposal not found' } });
+    }
+
     if (dispute.status === 'RESOLVED' || dispute.status === 'CLOSED') {
+      // If the proposal is already settled or dispute resolved, return idempotent 200 OK
+      if (proposal.status === 'settled' || parsed.data.response === 'accept') {
+        return reply.status(200).send({
+          proposal: {
+            id: proposalId,
+            round: proposal.round,
+            status: proposal.status || 'settled',
+            buyer: proposal.buyer_response ? JSON.parse(proposal.buyer_response) : { response: 'accept' },
+            seller: proposal.seller_response ? JSON.parse(proposal.seller_response) : { response: 'accept' },
+          },
+          dispute: { status: dispute.status },
+          message: 'Proposal was already accepted and dispute is resolved.',
+        });
+      }
       return reply.status(409).send({
         error: { code: 'ALREADY_RESOLVED', message: 'Cannot respond to proposal on a resolved dispute' },
       });
     }
 
     const order = appDb.db.prepare('SELECT * FROM orders WHERE id = ?').get(dispute.order_id) as any;
-    const proposal = appDb.db.prepare('SELECT * FROM proposals WHERE id = ?').get(proposalId) as any;
-    if (!proposal) {
-      return reply.status(404).send({ error: { code: 'NOT_FOUND', message: 'Proposal not found' } });
-    }
 
     const userId = req.user.sub;
     const isBuyer = userId === order.buyer_id;

@@ -17,6 +17,7 @@ export interface CardRendererProps {
   userLang?: string;
   counterpartName?: string;
   isFrozen?: boolean;
+  isResolved?: boolean;
   onOpenUpload?: () => void;
   onAcceptProposal?: (optionId: string) => void;
   onCounterProposal?: (optionId: string) => void;
@@ -30,6 +31,7 @@ export const CardRenderer: React.FC<CardRendererProps> = ({
   userLang = 'en',
   counterpartName = 'Counterpart',
   isFrozen = false,
+  isResolved = false,
   onOpenUpload,
   onAcceptProposal,
   onCounterProposal,
@@ -51,6 +53,7 @@ export const CardRenderer: React.FC<CardRendererProps> = ({
           isBuyer={isBuyer}
           counterpartName={counterpartName}
           isFrozen={isFrozen}
+          isResolved={isResolved}
           onAccept={onAcceptProposal}
           onCounter={onCounterProposal}
           onDecline={onDeclineProposal}

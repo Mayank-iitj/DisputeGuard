@@ -159,13 +159,19 @@ export const BuyerPortal: React.FC = () => {
 
   const handleAcceptProposal = async (optionId: string) => {
     if (!activeDispute || !activeDispute.proposal) return;
+    if (isResolved || activeDispute.status === 'RESOLVED') return;
     try {
       await api.respondProposal(activeDispute.id, activeDispute.proposal.id, 'accept', optionId);
       // Refresh dispute
       const updated = await api.getDispute(activeDispute.id);
       setActiveDispute(updated);
       broadcastRealtimeAction('refresh_dispute', activeDispute.id);
-    } catch (e) {
+    } catch (e: any) {
+      if (e?.code === 'ALREADY_RESOLVED' || e?.message?.includes('resolved')) {
+        const updated = await api.getDispute(activeDispute.id);
+        setActiveDispute(updated);
+        return;
+      }
       console.error('Error accepting proposal:', e);
     }
   };
@@ -346,6 +352,7 @@ export const BuyerPortal: React.FC = () => {
             counterpartName="Marco (Seller)"
             disputeId={activeDispute.id}
             isFrozen={isFrozen}
+            isResolved={isResolved}
             onOpenUpload={() => setShowEvidenceModal(true)}
             onAcceptProposal={handleAcceptProposal}
             onCounterProposal={handleOpenCounter}

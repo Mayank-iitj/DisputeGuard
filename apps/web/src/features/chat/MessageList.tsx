@@ -12,6 +12,7 @@ interface Props {
   counterpartName: string;
   disputeId: string;
   isFrozen?: boolean;
+  isResolved?: boolean;
   onOpenUpload?: () => void;
   onAcceptProposal?: (optionId: string) => void;
   onCounterProposal?: (optionId: string) => void;
@@ -35,6 +36,7 @@ export const MessageList: React.FC<Props> = ({
   counterpartName,
   disputeId,
   isFrozen = false,
+  isResolved = false,
   onOpenUpload,
   onAcceptProposal,
   onCounterProposal,
@@ -105,6 +107,7 @@ export const MessageList: React.FC<Props> = ({
                 userLang={userLang}
                 counterpartName={counterpartName}
                 isFrozen={isFrozen}
+                isResolved={isResolved}
                 onOpenUpload={onOpenUpload}
                 onAcceptProposal={onAcceptProposal}
                 onCounterProposal={onCounterProposal}
