@@ -34,7 +34,7 @@ export const SellerPortal: React.FC = () => {
       setUser(res.user);
       chat.init(res.nexconn.appKey);
       chat.connect(res.nexconn.token, res.user.id);
-      loadOrders();
+      loadOrders(true);
     });
 
     const unsubConn = chat.onConnection((s) => setConnStatus(s));
@@ -63,7 +63,7 @@ export const SellerPortal: React.FC = () => {
           if (event.data.action === 'select_dispute' && event.data.disputeId) {
             openDispute(event.data.disputeId);
           } else if (event.data.action === 'refresh_dispute') {
-            loadOrders();
+            loadOrders(true);
             if (event.data.disputeId) openDispute(event.data.disputeId);
           }
         }
@@ -77,13 +77,15 @@ export const SellerPortal: React.FC = () => {
     };
   }, []);
 
-  const loadOrders = async () => {
+  const loadOrders = async (autoSelect = false) => {
     try {
       const res = await api.getOrders();
       setOrders(res.items);
-      const disputed = res.items.find((o) => o.disputeId);
-      if (disputed && disputed.disputeId) {
-        openDispute(disputed.disputeId);
+      if (autoSelect) {
+        const disputed = res.items.find((o) => o.disputeId);
+        if (disputed && disputed.disputeId) {
+          openDispute(disputed.disputeId);
+        }
       }
     } catch (e) {
       console.error('Failed to load seller orders:', e);

@@ -25,7 +25,7 @@ export class AnthropicLlmImpl implements LlmPort {
     this.strongModel = process.env.LLM_MODEL_STRONG || 'claude-3-5-sonnet-latest';
 
     const apiKey = process.env.ANTHROPIC_API_KEY;
-    if (apiKey && process.env.AI_FIXTURES !== '1') {
+    if (apiKey) {
       try {
         this.client = new Anthropic({ apiKey });
       } catch (e) {
@@ -158,7 +158,32 @@ Return JSON only: { "reason": string, "confidence": number }`,
   async generateBrief(ctx: CaseBriefContext): Promise<AgentBrief> {
     if (!this.client) return this.fallback.generateBrief(ctx);
     try {
-      return this.fallback.generateBrief(ctx);
+      const response = await this.client.messages.create({
+        model: this.strongModel,
+        max_tokens: 1200,
+        temperature: 0,
+        system: `You are an expert cross-border marketplace arbitrator assistant for DisputeGuard.
+Analyze the dispute context and generate an Agent Brief for the human arbitrator.
+Be concise, factual, and neutral. Quote any detected threats or critical messages directly.
+Return JSON strictly conforming to schema:
+{
+  "summary": string[],
+  "claims": { "buyer": string, "seller": string },
+  "evidence": { "present": boolean, "severity": number, "confidence": number, "flags": string[] },
+  "riskReasons": Array<{ "type": string, "confidence": number, "quote_en": string, "lang": string }>,
+  "recommended": { "action": "refund_full"|"refund_partial"|"release_to_seller"|"request_more_evidence", "amount": { "value": number, "currency": string }, "rationale": string },
+  "policyOptions": any[]
+}`,
+        messages: [{ role: 'user', content: JSON.stringify(ctx) }],
+      });
+      const text = response.content[0].type === 'text' ? response.content[0].text : '';
+      const clean = text.replace(/```json/g, '').replace(/```/g, '').trim();
+      const parsed = JSON.parse(clean);
+      return {
+        ...parsed,
+        generatedAt: Date.now(),
+        policyOptions: ctx.policyOptions,
+      };
     } catch {
       return this.fallback.generateBrief(ctx);
     }
@@ -167,7 +192,25 @@ Return JSON only: { "reason": string, "confidence": number }`,
   async draftCopilot(ctx: CopilotDraftContext): Promise<CopilotDraft> {
     if (!this.client) return this.fallback.draftCopilot(ctx);
     try {
-      return this.fallback.draftCopilot(ctx);
+      const response = await this.client.messages.create({
+        model: this.fastModel,
+        max_tokens: 800,
+        temperature: 0,
+        system: `You draft grounded arbitrator messages in a marketplace dispute for DisputeGuard.
+Target party: ${ctx.targetParty} in language ${ctx.targetLang}.
+Intent: ${ctx.intent || 'de_escalate'}.
+Order: ${ctx.orderTitle}.
+Rules:
+1. Write natively in ${ctx.targetLang}.
+2. Provide an accurate English translation in 'english'.
+3. Do not promise amounts outside allowed: ${JSON.stringify(ctx.allowedAmountsMinor)}.
+4. Be professional, calm, and objective.
+Return JSON only: { "lang": "${ctx.targetLang}", "text": string, "english": string, "grounding": string[], "warnings": string[] }`,
+        messages: [{ role: 'user', content: JSON.stringify(ctx) }],
+      });
+      const text = response.content[0].type === 'text' ? response.content[0].text : '';
+      const clean = text.replace(/```json/g, '').replace(/```/g, '').trim();
+      return JSON.parse(clean);
     } catch {
       return this.fallback.draftCopilot(ctx);
     }
@@ -177,7 +220,7 @@ Return JSON only: { "reason": string, "confidence": number }`,
 let llmSingleton: LlmPort | null = null;
 export function getLlmService(): LlmPort {
   if (!llmSingleton) {
-    if (process.env.AI_FIXTURES === '1' || !process.env.ANTHROPIC_API_KEY) {
+    if (!process.env.ANTHROPIC_API_KEY) {
       llmSingleton = new FixtureLlmImpl();
     } else {
       llmSingleton = new AnthropicLlmImpl();

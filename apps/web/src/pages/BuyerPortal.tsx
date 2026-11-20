@@ -44,7 +44,7 @@ export const BuyerPortal: React.FC = () => {
       setUser(res.user);
       chat.init(res.nexconn.appKey);
       chat.connect(res.nexconn.token, res.user.id);
-      loadOrders();
+      loadOrders(true);
     });
 
     const unsubConn = chat.onConnection((s) => setConnStatus(s));
@@ -74,7 +74,7 @@ export const BuyerPortal: React.FC = () => {
           if (event.data.action === 'select_dispute' && event.data.disputeId) {
             openDispute(event.data.disputeId);
           } else if (event.data.action === 'refresh_dispute') {
-            loadOrders();
+            loadOrders(true);
             if (event.data.disputeId) openDispute(event.data.disputeId);
           }
         }
@@ -88,14 +88,16 @@ export const BuyerPortal: React.FC = () => {
     };
   }, []);
 
-  const loadOrders = async () => {
+  const loadOrders = async (autoSelect = false) => {
     try {
       const res = await api.getOrders();
       setOrders(res.items);
-      // Auto-open dispute if ord_1042 has one
-      const disputed = res.items.find((o) => o.disputeId);
-      if (disputed && disputed.disputeId) {
-        openDispute(disputed.disputeId);
+      // Auto-open dispute on initial mount if none is active
+      if (autoSelect) {
+        const disputed = res.items.find((o) => o.disputeId);
+        if (disputed && disputed.disputeId) {
+          openDispute(disputed.disputeId);
+        }
       }
     } catch (e) {
       console.error('Failed to load orders:', e);
@@ -129,7 +131,7 @@ export const BuyerPortal: React.FC = () => {
       setShowReportModal(false);
       setActiveDispute(res);
       chat.joinChannel(res.channelId);
-      loadOrders();
+      loadOrders(true);
       broadcastRealtimeAction('refresh_dispute', res.id);
     } catch (e) {
       console.error('Failed to open dispute:', e);

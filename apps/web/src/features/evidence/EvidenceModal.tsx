@@ -23,8 +23,13 @@ export const EvidenceModal: React.FC<Props> = ({ isOpen, onClose, onSubmit, isLo
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
-      const url = URL.createObjectURL(file);
-      setSelectedPhotos((prev) => [...prev, url]);
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (typeof reader.result === 'string') {
+          setSelectedPhotos((prev) => [...prev, reader.result as string]);
+        }
+      };
+      reader.readAsDataURL(file);
     }
   };
 
