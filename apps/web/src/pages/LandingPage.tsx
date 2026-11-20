@@ -143,10 +143,9 @@ export const LandingPage: React.FC = () => {
       {/* Typographic Hero Section */}
       <section className="pt-28 sm:pt-36 pb-8 sm:pb-12 px-4 sm:px-8 flex flex-col items-center justify-between min-h-[92vh] border-b-2 border-[#000000]">
         <div className="w-full flex-1 flex flex-col justify-center items-center text-center max-w-7xl mx-auto my-auto">
-          <h1 className="font-display uppercase text-[15.5vw] leading-[0.84] tracking-[-0.04em] text-[#000000] select-none block w-full">
+          <h1 className="font-display uppercase text-[15.5vw] leading-[0.88] tracking-[-0.04em] text-[#000000] select-none text-center">
             DISPUTE
-          </h1>
-          <h1 className="font-display uppercase text-[15.5vw] leading-[0.84] tracking-[-0.04em] text-[#000000] select-none block w-full -mt-2 sm:-mt-6">
+            <br />
             GUARD
           </h1>
         </div>
@@ -216,7 +215,7 @@ export const LandingPage: React.FC = () => {
               <span className="font-mono text-xs text-[#FF4D00] uppercase tracking-wider block font-bold mb-1">
                 [LIVE NEXCONN PROTOCOL INSPECTOR]
               </span>
-              <h2 className="font-display uppercase text-3xl sm:text-5xl lg:text-6xl tracking-tight leading-[0.9]">
+              <h2 className="font-display uppercase text-3xl sm:text-5xl lg:text-6xl tracking-tight leading-[1.05]">
                 HOW DISPUTEGUARD WORKS IN REAL-TIME
               </h2>
             </div>
@@ -438,7 +437,7 @@ export const LandingPage: React.FC = () => {
               <span className="font-mono text-xs text-[#FF4D00] uppercase tracking-wider block font-bold mb-1">
                 [SYSTEM CAPABILITIES]
               </span>
-              <h2 className="font-display uppercase text-3xl sm:text-5xl lg:text-7xl tracking-tight leading-[0.9]">
+              <h2 className="font-display uppercase text-3xl sm:text-5xl lg:text-7xl tracking-tight leading-[1.05]">
                 CORE PROTOCOL MODULES
               </h2>
             </div>
@@ -474,7 +473,7 @@ export const LandingPage: React.FC = () => {
                       </div>
                     </div>
 
-                    <h3 className="font-display uppercase text-2xl sm:text-4xl lg:text-[4vw] leading-[0.92] tracking-[-0.03em] text-white group-hover:translate-x-4 transition-transform duration-300">
+                    <h3 className="font-display uppercase text-2xl sm:text-4xl lg:text-[3.2vw] leading-[1.12] tracking-[-0.03em] text-white group-hover:translate-x-4 transition-transform duration-300">
                       {item.title}
                     </h3>
                   </div>
@@ -507,7 +506,7 @@ export const LandingPage: React.FC = () => {
             [NEXCONN BUILD CHALLENGE 2026 // READY TO TEST]
           </span>
 
-          <h2 className="font-display uppercase text-[12vw] sm:text-[11vw] leading-[0.84] tracking-[-0.04em] text-[#000000] select-none">
+          <h2 className="font-display uppercase text-[12vw] sm:text-[11vw] leading-[0.92] sm:leading-[0.88] tracking-[-0.04em] text-[#000000] select-none">
             RESOLVE IN MINUTES.
           </h2>
 
