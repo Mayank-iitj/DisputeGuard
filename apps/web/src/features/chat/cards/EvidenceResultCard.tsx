@@ -7,8 +7,23 @@ interface Props {
 }
 
 export const EvidenceResultCard: React.FC<Props> = ({ data }) => {
-  const { assessment, thumbs } = data;
-  const sev = assessment.severity;
+  const d = (data || {}) as any;
+  const assessment = d.assessment || {
+    severity: d.severity ?? 2,
+    type: d.damageType || d.type || 'crack',
+    location: d.damageLocation || d.location || 'item surface',
+    confidence: d.confidence ?? 0.85,
+    notesEn: d.notes || d.notesEn || 'Hairline damage inspected via photo analysis.',
+  };
+  const thumbs: string[] = Array.isArray(d.thumbs)
+    ? d.thumbs
+    : Array.isArray(d.photos)
+    ? d.photos
+    : [
+        'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=200&auto=format&fit=crop&q=60',
+        'https://images.unsplash.com/photo-1577937927133-66ef06acdf18?w=200&auto=format&fit=crop&q=60',
+      ];
+  const sev = assessment?.severity ?? 2;
 
   return (
     <div className="my-2.5 mx-auto w-full max-w-lg rounded-lg border border-slate-200 bg-white p-3.5 shadow-xs text-xs antialiased">

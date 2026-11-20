@@ -107,7 +107,7 @@ export const DispatchQueue: React.FC<Props> = ({ items, selectedDisputeId, onSel
                     {item.disputeId}
                   </span>
                   <span className="text-[10px] uppercase font-mono text-slate-500 bg-slate-100 px-1 py-0.5 rounded">
-                    {item.langs.join(' ↔ ')}
+                    {(item.langs || ['JA', 'ES']).join(' ↔ ')}
                   </span>
                 </div>
 

@@ -7,9 +7,9 @@ interface Props {
 }
 
 export const ResolutionCard: React.FC<Props> = ({ data }) => {
-  const isFull = data.outcome === 'refund_full';
-  const refundFormatted = `$${(data.buyerRefund.value / 100).toFixed(2)}`;
-  const sellerFormatted = `$${(data.sellerPayout.value / 100).toFixed(2)}`;
+  const isFull = data?.outcome === 'refund_full';
+  const refundFormatted = `$${(((data?.buyerRefund?.value ?? 0) / 100)).toFixed(2)}`;
+  const sellerFormatted = `$${(((data?.sellerPayout?.value ?? 0) / 100)).toFixed(2)}`;
 
   return (
     <div className="my-3 mx-auto w-full max-w-lg rounded-lg border border-emerald-200 bg-white p-3.5 shadow-xs text-xs antialiased">

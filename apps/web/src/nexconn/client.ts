@@ -66,7 +66,14 @@ export class NexconnWebChatClient implements ChatPort {
    */
   init(appKey: string): void {
     this.appKey = appKey;
-    if (!this.nexconnInitialized && appKey && typeof window !== 'undefined') {
+    const isMockKey =
+      !appKey ||
+      appKey === 'demo_app_key' ||
+      appKey === 'mock_app_key' ||
+      appKey.startsWith('demo_') ||
+      appKey.startsWith('mock_');
+
+    if (!this.nexconnInitialized && !isMockKey && typeof window !== 'undefined') {
       try {
         NCEngine.initialize({
           appKey,
@@ -120,6 +127,8 @@ export class NexconnWebChatClient implements ChatPort {
       } catch (err) {
         console.warn('[Nexconn SDK] Initialized with local fallback context:', err);
       }
+    } else if (isMockKey) {
+      console.info('[Nexconn] Operating on synchronized DisputeGuard bus (demo mode)');
     }
   }
 

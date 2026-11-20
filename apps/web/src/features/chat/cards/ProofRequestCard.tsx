@@ -9,6 +9,13 @@ interface Props {
 }
 
 export const ProofRequestCard: React.FC<Props> = ({ data, isBuyer, onOpenUpload }) => {
+  const d = (data || {}) as any;
+  const shotList: string[] = Array.isArray(d.shotList)
+    ? d.shotList
+    : Array.isArray(d.requiredAngles)
+    ? d.requiredAngles
+    : ['Item overview', 'Damage detail', 'Shipping packaging'];
+
   return (
     <div className="my-2.5 mx-auto w-full max-w-lg rounded-lg border border-slate-200 bg-white p-3.5 shadow-xs text-xs antialiased">
       <div className="flex items-center justify-between pb-2 border-b border-slate-100">
@@ -30,7 +37,7 @@ export const ProofRequestCard: React.FC<Props> = ({ data, isBuyer, onOpenUpload 
         </p>
 
         <div className="grid grid-cols-3 gap-2">
-          {data.shotList.map((shot, idx) => (
+          {shotList.map((shot, idx) => (
             <div
               key={idx}
               className="bg-slate-50 border border-slate-200 rounded p-2 flex flex-col items-center text-center text-slate-700"
@@ -38,8 +45,8 @@ export const ProofRequestCard: React.FC<Props> = ({ data, isBuyer, onOpenUpload 
               <span className="text-[10px] font-mono text-slate-400 font-semibold mb-0.5">
                 ANGLE 0{idx + 1}
               </span>
-              <span className="font-medium text-[11px] leading-tight">
-                {shot.replace(/^[①②③\d\.\s]+/, '')}
+              <span className="font-medium text-[11px] leading-tight capitalize">
+                {String(shot).replace(/^[①②③\d\.\s_]+/, '').replace(/_/g, ' ')}
               </span>
             </div>
           ))}

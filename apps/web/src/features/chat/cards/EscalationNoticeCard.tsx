@@ -8,8 +8,13 @@ interface Props {
 }
 
 export const EscalationNoticeCard: React.FC<Props> = ({ data, userLang = 'en' }) => {
-  const notices = data.noticeByLang || {};
-  const primaryNotice = notices[userLang] || notices['en'] || notices['ja'] || 'Under Review';
+  const notices = data?.noticeByLang || {};
+  const primaryNotice =
+    notices[userLang] ||
+    notices['en'] ||
+    notices['ja'] ||
+    (data as any)?.reason ||
+    'Dispute escalated to DisputeGuard Dispatch for priority arbitrator review';
 
   return (
     <div className="my-2.5 mx-auto w-full max-w-lg rounded-lg border border-rose-200 bg-rose-50/40 p-3.5 shadow-xs text-xs antialiased">

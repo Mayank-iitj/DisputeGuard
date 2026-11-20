@@ -27,10 +27,11 @@ export const ProposalCard: React.FC<Props> = ({
   onCounter,
   onDecline,
 }) => {
-  const [selectedOptionId, setSelectedOptionId] = useState<string>(data.options[0]?.id || '');
+  const options = Array.isArray(data?.options) ? data.options : [];
+  const [selectedOptionId, setSelectedOptionId] = useState<string>(options[0]?.id || '');
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-  const isSettled = isResolved || (data as any).status === 'settled';
+  const isSettled = isResolved || (data as any)?.status === 'settled';
   const isPending = myStatus === 'pending' && !isSettled;
 
   return (
@@ -38,18 +39,18 @@ export const ProposalCard: React.FC<Props> = ({
       <div className="flex items-center justify-between pb-2 border-b border-slate-100">
         <div className="flex items-center gap-1.5 font-medium text-slate-900">
           <Scale className="w-3.5 h-3.5 text-slate-600" />
-          <span>Settlement Proposal (Round {data.round} of 2)</span>
+          <span>Settlement Proposal (Round {data?.round ?? 1} of 2)</span>
         </div>
         <div className="text-[11px] font-mono text-slate-500">
-          Policy: {data.policyVersion}
+          Policy: {data?.policyVersion || 'v1'}
         </div>
       </div>
 
       {/* Options list */}
       <div className="mt-2.5 space-y-2">
-        {data.options.map((opt) => {
+        {options.map((opt) => {
           const isSelected = selectedOptionId === opt.id;
-          const refundAmount = (opt.buyerGets.value / 100).toFixed(2);
+          const refundAmount = opt.buyerGets ? ((opt.buyerGets.value || 0) / 100).toFixed(2) : '0.00';
 
           return (
             <label

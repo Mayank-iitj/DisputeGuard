@@ -265,7 +265,7 @@ export const DispatchTranscript: React.FC<Props> = ({ dispute, messages, onSendM
         </div>
 
         {/* Warnings */}
-        {warnings.length > 0 && (
+        {Array.isArray(warnings) && warnings.length > 0 && (
           <div className="mb-2 p-2 bg-amber-50 border border-amber-200 rounded text-xs text-amber-800 flex items-center gap-1.5">
             <AlertCircle className="w-3.5 h-3.5 text-amber-600 shrink-0" />
             <span>{warnings.join(', ')}</span>
