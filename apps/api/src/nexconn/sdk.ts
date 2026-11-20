@@ -16,17 +16,17 @@ export class NexconnServerSdkImpl implements ServerChatPort {
 
   private getAuthHeaders() {
     const nonce = Math.floor(Math.random() * 1000000).toString();
-    const curTime = Math.floor(Date.now() / 1000).toString();
-    const checkSum = crypto
+    const timestamp = Date.now().toString();
+    const signature = crypto
       .createHash('sha1')
-      .update(this.appSecret + nonce + curTime)
+      .update(this.appSecret + nonce + timestamp)
       .digest('hex');
 
     return {
       'App-Key': this.appKey,
       Nonce: nonce,
-      CurTime: curTime,
-      CheckSum: checkSum,
+      Timestamp: timestamp,
+      Signature: signature,
       'Content-Type': 'application/json',
     };
   }
@@ -37,8 +37,22 @@ export class NexconnServerSdkImpl implements ServerChatPort {
     }
 
     try {
-      // In real Nexconn endpoint, calls user/getToken
-      return { token: `nexconn_tok_${userId}` };
+      // Official Nexconn Server API per https://docs.nexconn.ai/platform-chat-api/user/register
+      const baseUrl = process.env.NEXCONN_DATA_CENTER === 'US'
+        ? 'https://api.us-light-api.com'
+        : 'https://api.sg-light-api.com';
+
+      const res = await fetch(`${baseUrl}/v4/auth/access-token/issue`, {
+        method: 'POST',
+        headers: this.getAuthHeaders(),
+        body: JSON.stringify({ userId, name, avatarUrl }),
+      });
+
+      const data = (await res.json()) as any;
+      if (data && data.code === 0 && data.result?.accessToken) {
+        return { token: data.result.accessToken };
+      }
+      return this.fallback.registerUser(userId, name, avatarUrl);
     } catch {
       return this.fallback.registerUser(userId, name, avatarUrl);
     }
